@@ -16,7 +16,7 @@ y_training = read_training_data.loc[:,dependent_feature]
 print(y_training)
 
 hyper_peram_criterion = "gini"
-hyper_peram_max_depth = list(range(1,100))
+hyper_peram_max_depth = 20
 
 training_accuracy = []
 
