@@ -5,7 +5,7 @@ from sklearn.ensemble import RandomForestClassifier
 
 
 from pickle import dump,load
-data = pd.read_csv("covid_Ireland.csv", sep=',')
+data = pd.read_csv("datasets/covid_Ireland.csv", sep=',')
 data = data[["SingleDoseCum","SingleDose","Dose1Cum","Dose2Cum","Dose2",
              "Dose1","FullyVacc","PartialPercent","FullyPercent"]]
 
