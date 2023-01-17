@@ -59,7 +59,7 @@ def chatbot():
         print("Colin: dataset found, " + dataset_locations[dataset_choice] + ". Do you wish to use this dataset?")
         answer2 = input()
         if answer2 == "yes":
-            print("Colin: What data analysis task would you like performed ?")
+            print("Colin: What Machine Learning model would you like to be  performed on this Dataset?")
             answer3 = input()
             mlIndex = user_selection(answer3, ml_models[dataset_choice])
 
