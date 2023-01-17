@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import GridSearchCV
-from sklearn.svm import SVC
+from sklearn import svm
 
 data = pd.read_csv("datasets/covid_EU.csv", sep=',')
 data = data[["YearWeekISO","ReportingCountry","Denominator","NumberDosesReceived","NumberDosesExported","FirstDose",
@@ -17,11 +17,12 @@ y = np.array(data[predict])
 #model = RandomForestClassifier(min_samples_split=3,n_estimators=6,max_depth=20,max_features=6)
 
 parameters = {"probability" : True}
-gridsearch = GridSearchCV(SVC(),parameters)
+svm_classifier = svm.SVC()
+gridsearch = GridSearchCV(svm_classifier,parameters)
 gridsearch.fit(x,y)
 print(sorted(gridsearch.cv_results_.keys()))
 print(gridsearch.best_params_)
-print(gridsearch.best_score_)
+print("Accuracy:"+ str(gridsearch.best_score_))
 
 #model.fit(x_train, y_train)
 #dump(model,open('model.csv','wb'))

@@ -27,7 +27,8 @@ y = np.array(data[predict])
 #model = RandomForestClassifier(min_samples_split=3,n_estimators=6,max_depth=20,max_features=6)
 
 parameters = {"min_samples_split" :[2,8]}
-gridsearch = GridSearchCV(GaussianNB(),parameters)
+gaussian_classifier = GaussianNB()
+gridsearch = GridSearchCV(gaussian_classifier,parameters)
 gridsearch.fit(x,y)
 print(sorted(gridsearch.cv_results_.keys()))
 print(gridsearch.best_params_)

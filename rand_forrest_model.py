@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
-from pickle import dump,load
 from sklearn.model_selection import GridSearchCV
 
 data = pd.read_csv("datasets/covid_Ireland.csv", sep=',')

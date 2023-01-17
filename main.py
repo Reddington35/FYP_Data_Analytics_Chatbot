@@ -27,11 +27,6 @@ ml_location = {
     2: "Support Vector Machine"
 }
 
-ml_hyper_perams = {
-
-}
-
-
 datasets = ["COVID-19 HSE Daily Vaccination Figures Ireland 2021/04/07 - 2022/12/04",
             "Data on COVID-19 vaccination in the EU/EEA 2020-W53 - 2022-W52 eu europe european union", "World covid-19 vaccination dataset"]
 
