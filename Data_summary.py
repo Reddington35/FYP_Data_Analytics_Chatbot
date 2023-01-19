@@ -1,5 +1,9 @@
 import pandas as pd
 import numpy as np
+
+# The data_summary method provides the user with a clean representation of the data being provided by the Datasets
+# they may be interested in analysing, this method provides the user with the number of Rows,columns,and shape of the
+# desired Dataset they are working with while also providing the type of Data provided in each label
 def data_summary(dataset):
     df = pd.read_csv(dataset, sep=',')
     #df = pd.DataFrame(dataset)
@@ -10,9 +14,10 @@ def data_summary(dataset):
     print("\nThe available labels for learning are: \n")
 
     for i in df.head(0):
-        print(i + ", ",sep="", end='')
+        print(i + " " + "|Type: " + str(df.dtypes[i]) + " |value contained in first Row:" + str(df[i][0]) + "|")
     print("\n*****************************\n")
 #data_summary("datasets/covid_Ireland.csv")
+    return df
 
 
 

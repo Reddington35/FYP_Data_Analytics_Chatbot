@@ -3,7 +3,6 @@ import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import GridSearchCV
 
-
 data = pd.read_csv("datasets/covid_Ireland.csv", sep=',')
 data = data[["X","Y","VaccinationDate",
              "VaccineText","Dose1","Dose2","SingleDose","Dose1Cum","Dose2Cum","SingleDoseCum","PartiallyVacc","FullyVacc","PartialPercent",
