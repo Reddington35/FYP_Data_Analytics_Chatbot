@@ -4,7 +4,6 @@ import numpy as np
 import spacy as sp
 import sklearn
 from sklearn.ensemble import RandomForestClassifier
-
 import Data_summary
 
 # NLP model set to prefer the use of Graphics Processing unit, using the en_core_web_lg english pipeline,
@@ -14,16 +13,17 @@ from Visualisation import visualisation_task
 sp.prefer_gpu()
 nlp = sp.load("en_core_web_lg")
 
-# Dictionary which displays th locations of the csv Datasets associated with this project
+# Dictionary which displays the locations of the csv Datasets associated with this project
 dataset_locations = {
     0: "datasets/covid_Ireland.csv",
     1: "datasets/covid_EU.csv",
-    2: "datasets/covid_World.csv"
+    2: "datasets/covid_World.csv",
+    3: "datasets/insurance.csv"
 }
 
 # list containing the number of tasks the user can ask to be performed on the Dataset of choice
-tasks_performed = ["Machine Learning(Ml)","train model","Visualisation","Plot chart"
-                  ,"Scatter plot","Bar chart","pie chart","Histogram"]
+tasks_performed = ["Machine Learning(Ml)","train model","Visualisation","Plot",
+                   "Scatter plot","Bar chart","Pie chart","Histogram"]
 
 # List detailing the associated ML classifiers associated with this project
 ml_models = ["naive bayes", "random forrest", "support vector machine(SVM)"]
@@ -69,17 +69,18 @@ dataset_labels = {
              "TargetGroup","Vaccine","Population"]
 }
 
+# list providing available datasets associated with the project
 datasets = ["COVID-19 HSE Daily Vaccination Figures Ireland 2021/04/07 - 2022/12/04",
-            "Data on COVID-19 vaccination in the EU/EEA 2020-W53 - 2022-W52 eu europe european union", "World covid-19 vaccination dataset"]
+            "Data on COVID-19 vaccination in the EU/EEA 2020-W53 - 2022-W52 eu europe european union", "World covid-19 vaccination dataset","practice insurance dataset"]
 
 # NLP method applied for finding similarity of words between the user input and the items contained within their Dictionaries
 def user_selection(user_input,choices):
-    answer1_nlp = nlp(user_input.upper())
+    answer1_nlp = nlp(user_input.lower())
     max_similarity = 0
     max_similarity_index = 0
     for i, d in enumerate(choices):
-        d_nlp = nlp(d.upper())
-
+        d_nlp = nlp(d.lower())
+        print(i," ",d," "," ",user_input," ",answer1_nlp.similarity(d_nlp))
         if answer1_nlp.similarity(d_nlp) > max_similarity:
             max_similarity = answer1_nlp.similarity(d_nlp)
             max_similarity_index = i
@@ -92,35 +93,53 @@ def user_selection(user_input,choices):
 # chatbot method which provides the user with questions and finds the similarity between the words being
 # provided by the user and then applies the provided methods to display the appropriate response
 def chatbot():
-    print("Colin: Hi this is colin your covid-19 helper :-), what dataset will you be working with today?")
+    dataset_choice = query("Colin: Hi this is colin your covid-19 helper :-), what dataset will you be working with today?",datasets)
+    # if dataset_choice != -1:
 
-    # Find the most similar using the user_selection() method
-    answer1 = input()
-    dataset_choice = user_selection(answer1, datasets)
-    if dataset_choice != -1:
-        print("Colin: dataset found, " + dataset_locations[dataset_choice] + ". Do you wish to use this dataset?")
-        answer2 = input()
+    print("Colin: dataset found, " + dataset_locations[dataset_choice] + ". Do you wish to use this dataset?")
+    continue_choice = input()
 
+    if continue_choice == "yes":
         # The data_summary method() is used to provide the user with a summary of the data being provided by the Dataset
         # they are interested in, allowing the user to make an informed choice on the labels that would be most
         # appropriate for analysis.
         # note: this also identifies if the label contains (NaN) or (NULL) values, and should be dropped from ML process
-        if answer2 == "yes":
-            df = Data_summary.data_summary(dataset_locations[dataset_choice])
-            print("Colin: Very good which task would you like to be performed on this Dataset (Machine Learning,visualisation plot) ?")
-            task = input()
-            task_choice = user_selection(task,tasks_performed)
-            print(task_choice)
-            if tasks_performed[task_choice] == "Scatter plot":
-                visualisation_task(df,task,tasks_performed[task_choice],nlp)
+        df = Data_summary.data_summary(dataset_locations[dataset_choice])
 
-            print("Colin: What Machine Learning model would you like to be performed on this Dataset?")
-            answer3 = input()
-            mlIndex = user_selection(answer3, ml_models)
-            print("Colin: found Machine Learning Model " + ml_location[mlIndex] + ", Do you want to use this model?")
-            if answer3 == "yes":
-                print("Colin: Which Target variable are you interested in for covid 19 Dataset")
-                answer4 = input()
+        task_choice = query("Colin: Very good which task would you like to be performed on this Dataset (Machine Learning,visualisation plot) ?",tasks_performed)
+        print(task_choice)
+
+        if tasks_performed[task_choice] == "Scatter plot" \
+                or tasks_performed[task_choice] == "Bar chart" \
+                or tasks_performed[task_choice] == "Histogram chart":
+
+            print("Which fields in the dataset do you wish to visualise?")
+            peram_choice = input()
+
+            visualisation_task(df,peram_choice,tasks_performed[task_choice],nlp)
+
+
+        mlIndex = query("Colin: What Machine Learning model would you like to be performed on this Dataset?", ml_models)
+
+        print("Colin: found Machine Learning Model " + ml_location[mlIndex] + ", Do you want to use this model?")
+
+        # if answer3 == "yes":
+        #     print("Colin: Which Target variable are you interested in for covid 19 Dataset")
+        #     answer4 = input()
+
+    else:
+        print("program end")
+
+def query(question,choices):
+    print(question)
+    choice = -1
+    while(choice == -1):
+        answer = input()
+        choice = user_selection(answer,choices)
+        if choice == -1:
+            print("please clarrify your request")
+    return choice
+
                 
 chatbot()
 
