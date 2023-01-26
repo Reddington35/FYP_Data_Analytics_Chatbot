@@ -1,22 +1,19 @@
 import matplotlib.pyplot as plt
-import spacy as sp
-import pandas as pd
-import numpy as np
 
 # Method for providing a Plot/Graph of the requested data from chosen Datasets
-def visualisation_task(dataset,user_input,plot_type,nlp):
+def visualisation_task(dataset, title,user_input,plot_type,nlp):
     # remove the name of the chart from the command
-    print(plot_type)
+    #print(plot_type)
     user_input.replace(plot_type,"")
 
     # use split to separate out remaining arguments
     perams = user_input.split(" ")
-    print(perams)
+    #print(perams)
     if len(perams) > 1:
 
         # find the columns for (x,y) in the dataset
         cols = dataset.columns.values
-        print(user_input)
+        #print(user_input)
         column_search = []
 
         for p in perams:
@@ -25,14 +22,14 @@ def visualisation_task(dataset,user_input,plot_type,nlp):
             max_similarity_d = ""
             for i, d in enumerate(cols):
                 d_nlp = nlp(d.lower())
-
-                if responce_nlp.similarity(d_nlp) > max_similarity:
+                response = responce_nlp.similarity(d_nlp)
+                if response > max_similarity:
                     max_similarity = responce_nlp.similarity(d_nlp)
                     max_similarity_d = d
 
             column_search.append([max_similarity_d,max_similarity])
 
-        print(column_search)
+        #print(column_search)
         # find results with max similarity
         max_col_score = 0
         max_col_index = 0
@@ -55,26 +52,28 @@ def visualisation_task(dataset,user_input,plot_type,nlp):
         max_cols.sort()
         x = column_search[max_cols[0]][0]
         y = column_search[max_cols[1]][0]
-        print(x,y)
-        print("plot_type = ", plot_type)
+        #print(x,y)
+        #print("plot_type = ", plot_type)
+
         if plot_type == "Scatter plot":
             plt.scatter(dataset[x],dataset[y])
             #plt.hist(dataset[x], color="purple", edgecolor="white")
-            plt.title("Insurance data")
-            plt.xlabel("age")
-            plt.ylabel("bmi")
+            plt.title(title)
+            plt.xlabel(x)
+            plt.ylabel(y)
             plt.show()
         elif plot_type == "Bar chart":
-            plt.bar(range(len(dataset[x])), dataset[y],color="purple")
-            plt.title("Insurance data")
-            plt.xlabel("age")
-            plt.ylabel("bmi")
+            print("barchart")
+            plt.bar(range(dataset[x]), dataset[y],color="purple")
+            plt.title(title)
+            plt.xlabel(x)
+            plt.ylabel(y)
             plt.show()
         elif plot_type == "Histogram chart":
             plt.hist(range(len(dataset[x])), dataset[y],color="red")
-            plt.title("Insurance data")
-            plt.xlabel("age")
-            plt.ylabel("bmi")
+            plt.title(title)
+            plt.xlabel(x)
+            plt.ylabel(y)
             plt.show()
 
 

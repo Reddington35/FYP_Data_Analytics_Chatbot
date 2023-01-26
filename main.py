@@ -1,10 +1,6 @@
-import pandas as pd
-import requests
-import numpy as np
 import spacy as sp
-import sklearn
-from sklearn.ensemble import RandomForestClassifier
 import Data_summary
+import matplotlib as plt
 
 # NLP model set to prefer the use of Graphics Processing unit, using the en_core_web_lg english pipeline,
 # for a higher accuracy evaluation
@@ -18,7 +14,6 @@ dataset_locations = {
     0: "datasets/covid_Ireland.csv",
     1: "datasets/covid_EU.csv",
     2: "datasets/covid_World.csv",
-    3: "datasets/insurance.csv"
 }
 
 # list containing the number of tasks the user can ask to be performed on the Dataset of choice
@@ -80,7 +75,7 @@ def user_selection(user_input,choices):
     max_similarity_index = 0
     for i, d in enumerate(choices):
         d_nlp = nlp(d.lower())
-        print(i," ",d," "," ",user_input," ",answer1_nlp.similarity(d_nlp))
+        #print(i," ",d," "," ",user_input," ",answer1_nlp.similarity(d_nlp))
         if answer1_nlp.similarity(d_nlp) > max_similarity:
             max_similarity = answer1_nlp.similarity(d_nlp)
             max_similarity_index = i
@@ -90,13 +85,14 @@ def user_selection(user_input,choices):
         return -1
 
 
+
 # chatbot method which provides the user with questions and finds the similarity between the words being
 # provided by the user and then applies the provided methods to display the appropriate response
 def chatbot():
     dataset_choice = query("Colin: Hi this is colin your covid-19 helper :-), what dataset will you be working with today?",datasets)
     # if dataset_choice != -1:
 
-    print("Colin: dataset found, " + dataset_locations[dataset_choice] + ". Do you wish to use this dataset?")
+    print("Colin: The dataset found was, " + dataset_locations[dataset_choice] + ". Do you wish to use this dataset?")
     continue_choice = input()
 
     if continue_choice == "yes":
@@ -107,7 +103,7 @@ def chatbot():
         df = Data_summary.data_summary(dataset_locations[dataset_choice])
 
         task_choice = query("Colin: Very good which task would you like to be performed on this Dataset (Machine Learning,visualisation plot) ?",tasks_performed)
-        print(task_choice)
+        #print(task_choice)
 
         if tasks_performed[task_choice] == "Scatter plot" \
                 or tasks_performed[task_choice] == "Bar chart" \
@@ -116,8 +112,7 @@ def chatbot():
             print("Which fields in the dataset do you wish to visualise?")
             peram_choice = input()
 
-            visualisation_task(df,peram_choice,tasks_performed[task_choice],nlp)
-
+            visualisation_task(df,dataset_locations[dataset_choice], peram_choice,tasks_performed[task_choice],nlp)
 
         mlIndex = query("Colin: What Machine Learning model would you like to be performed on this Dataset?", ml_models)
 
@@ -130,17 +125,6 @@ def chatbot():
     else:
         print("program end")
 
-def query(question,choices):
-    print(question)
-    choice = -1
-    while(choice == -1):
-        answer = input()
-        choice = user_selection(answer,choices)
-        if choice == -1:
-            print("please clarrify your request")
-    return choice
-
-                
 chatbot()
 
 
