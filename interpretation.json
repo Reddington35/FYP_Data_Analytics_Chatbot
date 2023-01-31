@@ -19,7 +19,7 @@
   "Approach": {
     "NaiveBayes": {
       "Title": "Naive Bayes",
-      "SupportText": "Naive Bayes NaiveBayes Nave Bays ",
+      "SupportText": "Naive Bayes NaiveBayes Naive Bays ",
       "Categorization": "Train"
     },
     "RandomForrest": {
