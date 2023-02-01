@@ -3,6 +3,7 @@
     "Ireland_Covid": {
       "Title":"COVID-19 HSE Daily Vaccination Figures Ireland 2021/04/07 - 2022/12/04",
       "SupportText": "COVID-19 HSE Daily Vaccination Figures Ireland covid eire Irish ire Republic state",
+      "Geo_entities": [],
       "Location": "datasets/covid_Ireland.csv"
     },
     "EU_Covid": {
@@ -13,6 +14,7 @@
     "World_Covid": {
       "Title": "World covid-19 vaccination 2020-02-24 to 2023-01-15",
       "SupportText": "World covid-19 vaccination covid world global",
+      "Geo_entities": ["continent","location"],
       "Location": "datasets/covid_World.csv"
     }
   },

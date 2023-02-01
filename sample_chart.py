@@ -9,7 +9,7 @@ def make_line_chart(dataset,entry_field,exit_field,target,region,location,start_
      # read in dataframe
      df = pd.read_csv(dataset['Location'], sep=',')
      df = df[(df[entry_field] == region) & (df[exit_field] == location)]
-     print("result is ",df)
+     #print("result is ",df)
      # converts date string to date object using the pandas library
      df['date'] = pd.to_datetime(df['date'])
      df = df.set_index(df['date'])

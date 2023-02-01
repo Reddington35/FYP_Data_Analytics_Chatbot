@@ -18,19 +18,15 @@ target_classification = -1
 variables = -1
 approach = -1
 
-# Chatbot main method for implementation of all its available functionality
-def chatbot():
-    initial_setup()
-
 # this method is primarily used to decipher the Dataset chosen,Approach such as training or plotting
 # and location of the requested Dataset from the json file named interpretation.json
-def initial_setup():
+def chatbot():
     print("Colin: Hi my name is Colin, your Covid-19 chatbot, who am i talking to?")
     login = input("User :")
-    login_details = login + " : "
-    print("Colin: Hello " + login_details.replace(':','') + "How may I help you with your covid related queries today?")
+    username = user_login(login)
+    print("Colin: Hello " + username.replace(':','') + "How may I help you with your covid related queries today?")
     # statement takes in the user input in lowercase
-    statement = input(login_details)
+    statement = input(username)
     statement = statement.lower()
 
     # Getting dataset section
@@ -50,22 +46,20 @@ def initial_setup():
         print("Approach: " + approach["Title"])
         print("Location: " + dataset['Location'])
 
-        print("Colin: Are you happy with these details y/n")
+        # print("Colin: Are you happy with these details y/n")
         # checks to see if the user is happy with their selection
         # if yes chatbot will move to the next query otherwise it will ask the user
         # for further clarification
-        contentAnswer = input(login_details)
-        if contentAnswer == 'y':
+        contentAnswer = decision_handler("Colin: Are you happy with these details y/n",username)
+        if contentAnswer:
             content = True
-        elif contentAnswer == 'n':
-            print("Colin: Please rephrase and I will do my best to understand it")
-            statement = input(login_details)
-            content = False
         else:
-            return
+            print("Colin: Please rephrase and I will do my best to understand it")
+            statement = input(username)
+            content = False
     # the decision handler method is called here to handle the request should the user desire a summary of the
     # requested Dataset or continue on to the next query
-    choice = decision_handler("Colin: Would you like a summary of the required Dataset?\n" + login_details)
+    choice = decision_handler("Colin: Would you like a summary of the required Dataset?",username)
     if choice:
         # Data_summary function called
         Data_summary.data_summary(dataset["Location"])
@@ -74,29 +68,33 @@ def initial_setup():
 
     if dataset['Location'] == "datasets/covid_World.csv":
         print("\nColin: which Continent are you interested in plotting?")
-        continent = input(login_details)
+        continent = input(username)
         continent_peram, continent_name = region_check(continent, dataset)
         print("\nColin: which Country are you interested in plotting?")
-        country = input(login_details)
+        country = input(username)
         country_peram, country_name = region_check(country, dataset)
         print("Colin: Please enter the start date for the time period you are interested in plotting "
               "Please use the format year-month-day, for example: 2020-02-29")
-        start_date = input(login_details)
+        start_date = input(username)
         start_date_plot = set_start_date(start_date, dataset)
         print("Colin: Please enter the end date for the time period you are interested in plotting "
               "Please use the format year-month-day, for example: 2020-02-29")
-        end_date = input(login_details)
+        end_date = input(username)
         end_date_plot = set_end_date(end_date, dataset)
         print("Colin: Which Target variable are you interested in plotting?")
-        target = input(login_details)
+        target = input(username)
         target_chosen = find_target(target, dataset)
-        print("Colin: Would you like to plot the chart with the following information,\n"
+
+        decide =  decision_handler("Colin: Would you like to plot the chart with the following information,\n"
               "continent: " + continent + ",country: " + country + ",start-date: " + start_date + ",end-date " + end_date
-              + ",Target: " + target)
-        plot_chart = input(login_details)
-        if decision_handler(plot_chart):
-            make_line_chart(dataset,continent_peram,country_peram,target_chosen,continent_name,country_name, start_date_plot,
+              + ",Target: " + target,username)
+
+        if decide:
+            make_line_chart(dataset,continent_peram,country_peram,target_chosen,continent_name,country_name,start_date_plot,
                             end_date_plot,"purple")
+        else:
+            print("invalid chart")
+        return username
 
 # scanJson method
 def scanJson(field, statement):
@@ -139,13 +137,14 @@ def query(answer,choices):
             answer = input()
     return choice
 
-def decision_handler(question):
-    summary = question.lower()
+def decision_handler(question,username):
+    print(question.lower())
+    summary = input(username)
     while summary != "yes" and summary != 'y' \
             and summary != "no" and summary != 'n':
-        print(summary)
         print("Colin: could you please enter yes or no as your response")
-        summary = input(question).lower()
+        print(question.lower())
+        summary = input(username)
     if summary == "yes" or summary == 'y':
         return True
     else:
@@ -203,19 +202,19 @@ def region_check(user_input, dataset):
         cont_peram = 'continent'
         cont_name = user_input
         return cont_peram,  cont_name
+
     elif geopolitical_term_check(user_input) in df['location'].values:
         print("In countries column")
         country_peram = 'location'
         country_name = user_input
         return country_peram, country_name
     else:
-        print("Colin: please rephrase the value name by using a capital letter at the start")
+        print("Please use exact case and spelling for labels for example: Europe")
 
 def set_start_date(user_input, dataset):
     df = pd.read_csv(dataset['Location'], sep=',')
     if date_check(user_input) in df['date'].values:
         print("In start date column")
-        date_peram = 'date'
         date_start = user_input
         return  date_start
     else:
@@ -225,7 +224,6 @@ def set_end_date(user_input, dataset):
     df = pd.read_csv(dataset['Location'], sep=',')
     if date_check(user_input) in df['date'].values:
         print("In end date column")
-        date_peram = 'date'
         date_end = user_input
         return date_end
     else:
@@ -239,4 +237,9 @@ def find_target(user_input, dataset):
         return target
     else:
         print("not found")
+
+def user_login(login):
+    login = login + " : "
+    return login
+
 chatbot()
