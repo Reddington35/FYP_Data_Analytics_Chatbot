@@ -2,10 +2,9 @@ import spacy as sp
 import json
 import pandas as pd
 import Data_summary
-
-# Nlp model chosen for the chatbot
 from sample_chart import make_line_chart
 
+# Nlp model chosen for the chatbot
 sp.prefer_gpu()
 nlp = sp.load("en_core_web_lg")
 
@@ -112,11 +111,15 @@ def scanJson(field, statement):
     choice = jsonChoice[numberChoice]
     return choice
 
+# nlp user_selection function takes in user input in lower case, then checks to see if max similarity is higher or lower
+# than the choices available
 def user_selection(user_input, choices):
     answer1_nlp = nlp(user_input.lower())
     max_similarity = 0
     max_similarity_index = 0
 
+    # the for loop here will check the scores of their similarity, has vector condition here is used to see if a vector
+    # is not present, this will handle spelling mistakes or errors made by the user
     for i, d in enumerate(choices):
         d_nlp = nlp(d.lower())
         if answer1_nlp.has_vector:
@@ -128,6 +131,8 @@ def user_selection(user_input, choices):
     else:
         return -1
 
+# The query method here will handle choices the user may make that do not correspond to the datasets present
+# within the library or choices the chatbot can't make out with similarity() using cosign similarity
 def query(answer,choices):
     choice = -1
     while(choice == -1):
@@ -137,6 +142,9 @@ def query(answer,choices):
             answer = input()
     return choice
 
+# decision_handler method is used to manage basic yes or no patterns in questions
+# no nlp is used here just takes in a question and user input as parameters and manages the response the user provides
+# if no yes/no response is given the method will ask the user to simply respond yes/no
 def decision_handler(question,username):
     print(question.lower())
     summary = input(username)
@@ -150,6 +158,8 @@ def decision_handler(question,username):
     else:
         return False
 
+# label_selection method is used to search the requested Dataset and print all available labels represented in the
+# dataset
 def label_selection(dataset):
     # Target Variable
     df = pd.read_csv(dataset['Location'], sep=',')
@@ -175,7 +185,8 @@ def plot_types(approach):
         plot_type = "line Chart"
     return plot_type
 
-
+# the geopolitical_term_check method is used to identify whether a dataset is a GPE or LOC, then if the condition is met
+# it will add it to a list for use with other methods
 def geopolitical_term_check(text):
     doc = nlp(text)
     gpe_list = []
@@ -185,6 +196,7 @@ def geopolitical_term_check(text):
             gpe_list.append(entity.text)
     return gpe_list
 
+# the date_check method is similar to the geopolitical_term_check method only checks for dates
 def date_check(text):
     doc = nlp(text)
     date_time = []
@@ -195,6 +207,8 @@ def date_check(text):
 
 #print(geopolitical_term_check("scatter plot"))
 
+# methods below used in testing, to see if a more dynamic method can be achieved using the graphing methods
+# presented in sample_chart file
 def region_check(user_input, dataset):
     df = pd.read_csv(dataset['Location'], sep=',')
     if geopolitical_term_check(user_input) in df['continent'].values:
@@ -229,6 +243,8 @@ def set_end_date(user_input, dataset):
     else:
         print("Colin: Please use date format year-month-day, for example: 2020-02-29")
 
+# find_target method searches the head of the dataset (the labels) and checks to see if their a match
+# with the user input
 def find_target(user_input, dataset):
     df = pd.read_csv(dataset['Location'], sep=',')
     if user_input in df.head(0):
@@ -238,6 +254,7 @@ def find_target(user_input, dataset):
     else:
         print("not found")
 
+# method for identifying user login details
 def user_login(login):
     login = login + " : "
     return login
