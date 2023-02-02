@@ -3,7 +3,6 @@ import pandas as pd
 import numpy as np
 
 # World Dataset operations using different types of charts
-
 # Function for plotting a Line Chart
 def make_line_chart(dataset,entry_field,exit_field,target,region,location,start_date,end_date,color):
      # read in dataframe

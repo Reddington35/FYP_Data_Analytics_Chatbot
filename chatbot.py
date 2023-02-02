@@ -17,8 +17,10 @@ target_classification = -1
 variables = -1
 approach = -1
 
+# This is the main function of the chatbot and will handle any conversational functionality
 # this method is primarily used to decipher the Dataset chosen,Approach such as training or plotting
 # and location of the requested Dataset from the json file named interpretation.json
+# and operate the chatbot with the functions written to improve its mechanics
 def chatbot():
     print("Colin: Hi my name is Colin, your Covid-19 chatbot, who am i talking to?")
     login = input("User :")
@@ -161,11 +163,12 @@ def decision_handler(question,username):
 # label_selection method is used to search the requested Dataset and print all available labels represented in the
 # dataset
 def label_selection(dataset):
-    # Target Variable
+    #opens the dataframe using pandas library
     df = pd.read_csv(dataset['Location'], sep=',')
     labels = df.columns.values
     labelView = ""
-
+    # for loop uses modulus to print the label and move to the next line of the print
+    # with every 6 entries of the datasets labels
     for i in range(0, len(labels)):
         if i % 7 == 6:
             labelView += " |\n"
