@@ -2,7 +2,12 @@ import spacy as sp
 import json
 import pandas as pd
 import Data_summary
+from category_encoders import one_hot
 from sample_chart import make_line_chart
+#Import Random Forest Model
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+from sklearn import metrics
 
 # Nlp model chosen for the chatbot
 sp.prefer_gpu()
@@ -25,7 +30,7 @@ def chatbot():
     print("Colin: Hi my name is Colin, your Covid-19 chatbot, who am i talking to?")
     login = input("User :")
     username = user_login(login)
-    print("Colin: Hello " + username.replace(':','') + "How may I help you with your covid related queries today?")
+    print("Colin: Hello " + username.replace(':',',') + "How may I help you with your covid related queries today?")
     # statement takes in the user input in lowercase
     statement = input(username)
     statement = statement.lower()
@@ -176,6 +181,7 @@ def label_selection(dataset):
     print("Available labels: \n")
     labelView += " |"
     print(labelView)
+    return df
 
 def plot_types(approach):
     if approach["Title"] == "Scatter Plot":
@@ -262,4 +268,69 @@ def user_login(login):
     login = login + " : "
     return login
 
-chatbot()
+def ml_model(target, labels, dataset):
+    df = pd.read_csv(dataset['Location'], sep=',')
+    labels = []
+    target =''
+    if labels in df.head(0):
+        x_values = df.append(labels)
+    else:
+        print("Colin: The label you are looking for is not present in this dataset")
+
+    if target in df.head(0):
+        y_value = target
+    else:
+        print("Colin: The feature you are looking for is not present in the dataset")
+
+def randomForrestTest(target, labels, dataset):
+    print(dataset)
+
+    # labelsDataset = dataset[labels].copy()
+    # targetDataset = dataset[target].copy()
+
+
+    # data = pd.DataFrame({
+    #     'sepal length': iris.data[:, 0],
+    #     'sepal width': iris.data[:, 1],
+    #     'petal length': iris.data[:, 2],
+    #     'petal width': iris.data[:, 3],
+    #     'species': iris.target
+    # })
+    # data.head()
+    newLabels = labels
+    newLabels.append(target)
+    print("Labels: " + str(newLabels))
+    newDataset = dataset[newLabels].copy()
+    print("Dataset: ")
+    print(newDataset)
+    cleanDataset = newDataset.dropna()
+    cleanDataset = cleanDataset.head(50000)
+
+    print(cleanDataset)
+
+
+    X = cleanDataset[labels]
+    y = cleanDataset[target]
+    print(X)
+    print(y)
+
+    # with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
+    #     print(X)
+    #
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
+
+    clf = RandomForestClassifier(n_estimators=10)
+    print("Fitting dataset")
+    clf.fit(X_train, y_train)
+
+    print("predicting dataset")
+    y_pred = clf.predict(X_test)
+
+    print("Accuracy:", metrics.accuracy_score(y_test, y_pred))
+
+
+dsLoc = scanJson("Datasets", "world")
+dfDs = label_selection(dsLoc)
+
+randomForrestTest("total_cases", ["aged_65_older", "hospital_beds_per_thousand"], dfDs)
+#chatbot()
