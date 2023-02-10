@@ -1,3 +1,5 @@
+import sys
+
 import spacy as sp
 import json
 import pandas as pd
@@ -6,7 +8,7 @@ from category_encoders import one_hot
 from sample_chart import make_line_chart
 #Import Random Forest Model
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn import metrics
 
 # Nlp model chosen for the chatbot
@@ -30,7 +32,7 @@ def chatbot():
     print("Colin: Hi my name is Colin, your Covid-19 chatbot, who am i talking to?")
     login = input("User :")
     username = user_login(login)
-    print("Colin: Hello " + username.replace(':',',') + "How may I help you with your covid related queries today?")
+    print("Colin: Hello " + username.replace(':',',') + "Which dataset will we be working with today?")
     # statement takes in the user input in lowercase
     statement = input(username)
     statement = statement.lower()
@@ -43,13 +45,9 @@ def chatbot():
         dataset = scanJson("Datasets", statement)
 
         # Get target classification section
-        # Get approach section
-        approach = scanJson("Approach", statement)
-
         print("Selection")
         print("-------------")
         print("Dataset: " + dataset['Title'])
-        print("Approach: " + approach["Title"])
         print("Location: " + dataset['Location'])
 
         # print("Colin: Are you happy with these details y/n")
@@ -63,44 +61,70 @@ def chatbot():
             print("Colin: Please rephrase and I will do my best to understand it")
             statement = input(username)
             content = False
-    # the decision handler method is called here to handle the request should the user desire a summary of the
-    # requested Dataset or continue on to the next query
-    choice = decision_handler("Colin: Would you like a summary of the required Dataset?",username)
-    if choice:
-        # Data_summary function called
-        Data_summary.data_summary(dataset["Location"])
-    # label_selection function called
-    label_selection(dataset)
+    not_exit = True
 
-    if dataset['Location'] == "datasets/covid_World.csv":
-        print("\nColin: which Continent are you interested in plotting?")
-        continent = input(username)
-        continent_peram, continent_name = region_check(continent, dataset)
-        print("\nColin: which Country are you interested in plotting?")
-        country = input(username)
-        country_peram, country_name = region_check(country, dataset)
-        print("Colin: Please enter the start date for the time period you are interested in plotting "
-              "Please use the format year-month-day, for example: 2020-02-29")
-        start_date = input(username)
-        start_date_plot = set_start_date(start_date, dataset)
-        print("Colin: Please enter the end date for the time period you are interested in plotting "
-              "Please use the format year-month-day, for example: 2020-02-29")
-        end_date = input(username)
-        end_date_plot = set_end_date(end_date, dataset)
-        print("Colin: Which Target variable are you interested in plotting?")
-        target = input(username)
-        target_chosen = find_target(target, dataset)
+    # Basic Instructions on the services available by the chatbot
+    print("Colin: I am a covid-19 chatbot, however I can only provide "
+              "help on topics such as:\n - Data summary of the Dataset\n - Graph the Dataset\n - Build a ml model of the"
+              " dataset using (Random Forrest, Naive Bayes or SVM)\n - Display the available Features")
 
-        decide =  decision_handler("Colin: Would you like to plot the chart with the following information,\n"
-              "continent: " + continent + ",country: " + country + ",start-date: " + start_date + ",end-date " + end_date
-              + ",Target: " + target,username)
+    # While loop that checks to see if the user wants to quit the application
+    # or choose from four distinct services available
+    while not_exit:
+        print("Colin: which task would you like me to perform?")
+        task = input(username)
+        not_exit = check_command(task,username)
+        if "summary" in task.lower():
+            task_summary = decision_handler("Colin: are you sure you would like to see a summary of "+ dataset["Title"]
+                                            + "?",username)
+            if task_summary:
+                Data_summary.data_summary(dataset['Location'])
+        elif "features" in task.lower():
+            task_features = decision_handler("Colin: are you sure you would like to view the available features contained in "
+                             + dataset["Title"] + " " + username.replace(':',''),username)
+            if task_features:
+                feature_selection(dataset)
+        elif "random forrest" in task.lower():
+            random_forrest = decision_handler("Colin: are you sure you would like to perform Random Forrest on " + dataset['Title'] + " "
+                             + username.replace(':',''),username)
+            if random_forrest:
+                train_model("Deaths - cumulative total per 100000 population",
+                            ["Cases - cumulative total per 100000 population"], dfDs)
+        elif not_exit:
+            print("Colin: How can I help you, please be specific with your queries " + username.replace(':', ''))
+        elif not_exit is False:
+            print("Colin: Goodbye " + username.replace(':',''))
 
-        if decide:
-            make_line_chart(dataset,continent_peram,country_peram,target_chosen,continent_name,country_name,start_date_plot,
-                            end_date_plot,"purple")
-        else:
-            print("invalid chart")
-        return username
+
+    # if dataset['Location'] == "datasets/covid_World.csv":
+    #     print("\nColin: which Continent are you interested in plotting?")
+    #     continent = input(username)
+    #     continent_peram, continent_name = region_check(continent, dataset)
+    #     print("\nColin: which Country are you interested in plotting?")
+    #     country = input(username)
+    #     country_peram, country_name = region_check(country, dataset)
+    #     print("Colin: Please enter the start date for the time period you are interested in plotting "
+    #           "Please use the format year-month-day, for example: 2020-02-29")
+    #     start_date = input(username)
+    #     start_date_plot = set_start_date(start_date, dataset)
+    #     print("Colin: Please enter the end date for the time period you are interested in plotting "
+    #           "Please use the format year-month-day, for example: 2020-02-29")
+    #     end_date = input(username)
+    #     end_date_plot = set_end_date(end_date, dataset)
+    #     print("Colin: Which Target variable are you interested in plotting?")
+    #     target = input(username)
+    #     target_chosen = find_target(target, dataset)
+    #
+    #     decide =  decision_handler("Colin: Would you like to plot the chart with the following information,\n"
+    #           "continent: " + continent + ",country: " + country + ",start-date: " + start_date + ",end-date " + end_date
+    #           + ",Target: " + target,username)
+    #
+    #     if decide:
+    #         make_line_chart(dataset,continent_peram,country_peram,target_chosen,continent_name,country_name,start_date_plot,
+    #                         end_date_plot,"purple")
+    #     else:
+    #         print("invalid chart")
+    #     return username
 
 # scanJson method
 def scanJson(field, statement):
@@ -153,7 +177,7 @@ def query(answer,choices):
 # no nlp is used here just takes in a question and user input as parameters and manages the response the user provides
 # if no yes/no response is given the method will ask the user to simply respond yes/no
 def decision_handler(question,username):
-    print(question.lower())
+    print(question)
     summary = input(username)
     while summary != "yes" and summary != 'y' \
             and summary != "no" and summary != 'n':
@@ -167,7 +191,7 @@ def decision_handler(question,username):
 
 # label_selection method is used to search the requested Dataset and print all available labels represented in the
 # dataset
-def label_selection(dataset):
+def feature_selection(dataset):
     #opens the dataframe using pandas library
     df = pd.read_csv(dataset['Location'], sep=',')
     labels = df.columns.values
@@ -178,10 +202,9 @@ def label_selection(dataset):
         if i % 7 == 6:
             labelView += " |\n"
         labelView += " | " + labels[i]
-    print("Available labels: \n")
-    labelView += " |"
+    print("Available features: \n")
+    labelView += " |\n"
     print(labelView)
-    return df
 
 def plot_types(approach):
     if approach["Title"] == "Scatter Plot":
@@ -282,21 +305,18 @@ def ml_model(target, labels, dataset):
     else:
         print("Colin: The feature you are looking for is not present in the dataset")
 
-def randomForrestTest(target, labels, dataset):
+def check_command(command, user):
+    if "quit" in command.lower() or "exit" in command.lower():
+        return not decision_handler("Colin: Are you sure you want leave the chat?", user)
+    else:
+        return True
+
+def find_dataset(dataset):
+    df = pd.read_csv(dataset['Location'], sep=',')
+    return df
+
+def train_model(target, labels, dataset):
     print(dataset)
-
-    # labelsDataset = dataset[labels].copy()
-    # targetDataset = dataset[target].copy()
-
-
-    # data = pd.DataFrame({
-    #     'sepal length': iris.data[:, 0],
-    #     'sepal width': iris.data[:, 1],
-    #     'petal length': iris.data[:, 2],
-    #     'petal width': iris.data[:, 3],
-    #     'species': iris.target
-    # })
-    # data.head()
     newLabels = labels
     newLabels.append(target)
     print("Labels: " + str(newLabels))
@@ -304,33 +324,24 @@ def randomForrestTest(target, labels, dataset):
     print("Dataset: ")
     print(newDataset)
     cleanDataset = newDataset.dropna()
-    cleanDataset = cleanDataset.head(50000)
-
+    #cleanDataset = cleanDataset.head(50000)
     print(cleanDataset)
-
 
     X = cleanDataset[labels]
     y = cleanDataset[target]
     print(X)
     print(y)
 
-    # with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
-    #     print(X)
-    #
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
 
-    clf = RandomForestClassifier(n_estimators=10)
+    clf = RandomForestClassifier(n_estimators=10,max_depth=6,criterion="entropy")
     print("Fitting dataset")
     clf.fit(X_train, y_train)
-
     print("predicting dataset")
     y_pred = clf.predict(X_test)
-
     print("Accuracy:", metrics.accuracy_score(y_test, y_pred))
+dsLoc = scanJson("Datasets", "who")
+dfDs = find_dataset(dsLoc)
 
-
-dsLoc = scanJson("Datasets", "world")
-dfDs = label_selection(dsLoc)
-
-randomForrestTest("total_cases", ["aged_65_older", "hospital_beds_per_thousand"], dfDs)
-#chatbot()
+# Function call for chatbot
+chatbot()

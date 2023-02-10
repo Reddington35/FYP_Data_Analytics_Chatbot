@@ -11,6 +11,11 @@
       "SupportText": "COVID-19 vaccination EU/EEA EU covid eu europe european union",
       "Location": "datasets/covid_EU.csv"
     },
+    "WHO_covid": {
+      "Title": "WHO Coronavirus (COVID-19) Global Data",
+      "SupportText": "WHO Coronavirus (COVID-19) Global Dataset world who covid-19",
+      "Location": "datasets/WHO_covid.csv"
+    },
     "World_Covid": {
       "Title": "World covid-19 vaccination 2020-02-24 to 2023-01-15",
       "SupportText": "World covid-19 vaccination covid world global",
@@ -54,6 +59,11 @@
       "Title": "Line Chart",
       "SupportText": "Line chart plot chart LineChart line",
       "Categorization": "plot"
+    },
+    "Summary": {
+      "Title": "Summary of Dataset",
+      "SupportText": "dataset summary Data Summary",
+      "Categorization": "Display"
     }
   }
 }
