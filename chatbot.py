@@ -1,5 +1,3 @@
-import sys
-
 import spacy as sp
 import json
 import pandas as pd
