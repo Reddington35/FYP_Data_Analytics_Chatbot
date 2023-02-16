@@ -3,23 +3,32 @@
     "Ireland_Covid": {
       "Title":"COVID-19 HSE Daily Vaccination Figures Ireland 2021/04/07 - 2022/12/04",
       "SupportText": "COVID-19 HSE Daily Vaccination Figures Ireland covid eire Irish ire Republic state",
-      "Geo_entities": [],
+      "PatternTitle": "Dataset_Irl",
+      "Patterns": ["COVID-19 HSE Daily Vaccination Figures Ireland 2021/04/07 - 2022/12/04 ","Irish","irish",
+        "ire","Irish Dataset","irish dataset","Ireland","IRELAND","ireland"],
       "Location": "datasets/covid_Ireland.csv"
     },
     "EU_Covid": {
       "Title":"Data on COVID-19 vaccination in the EU/EEA 2020-W53 - 2022-W52",
       "SupportText": "COVID-19 vaccination EU/EEA EU covid eu europe european union",
+      "PatternTitle": "Dataset_EU",
+      "Patterns": ["COVID-19 vaccination EU/EEA EU covid","eu","EU","E.U","europe","Europe","european union"
+      ,"European Union","euro","eu dataset","EU Dataset","european dataset","European Dataset"],
       "Location": "datasets/covid_EU.csv"
     },
     "WHO_covid": {
       "Title": "WHO Coronavirus (COVID-19) Global Data",
       "SupportText": "WHO Coronavirus (COVID-19) Global Dataset world who covid-19",
+      "PatternTitle": "Dataset_WHO",
+      "Patterns": ["WHO Coronavirus (COVID-19) Global Dataset world who covid-19","WHO Dataset","who dataset"],
       "Location": "datasets/WHO_covid.csv"
     },
     "World_Covid": {
       "Title": "World covid-19 vaccination 2020-02-24 to 2023-01-15",
       "SupportText": "World covid-19 vaccination covid world global",
-      "Geo_entities": ["continent","location"],
+      "PatternTitle": "Dataset_World",
+      "Patterns": ["World covid-19 vaccination covid world global","world dataset","World Dataset","global dataset",
+        "Global Dataset","global","World","world","WORLD","WORLD DATASET"],
       "Location": "datasets/covid_World.csv"
     }
   },
@@ -27,44 +36,107 @@
     "NaiveBayes": {
       "Title": "Naive Bayes",
       "SupportText": "Naive Bayes NaiveBayes Naive Bays ",
-      "Categorization": "Train"
+      "PatternTitle": "Naive_Bayes",
+      "Patterns": ["Naive Bayes" ,"NaiveBayes"," naive bayes","naive","Naive","bays","Bays"],
+      "Categorization": "Train",
+      "def": "NaiveBayes"
     },
     "RandomForrest": {
-      "Title": "Random Forrest",
+      "Title": "Random Forest",
       "SupportText": "Random Forrest trees forest ",
-      "Categorization": "Train"
+      "PatternTitle": "Random_Forest",
+      "Patterns": ["Random_Forest" ,"random forest","RANDOM FOREST","random","forrest","Random","Forest","rand"],
+      "Categorization": "Train",
+      "def": "RandomForest"
     },
     "SupportVectorMachine": {
       "Title": "Support Vector Machine SVM",
       "SupportText": "Support Vector Machine SVM ",
-      "Categorization": "Train"
+      "PatternTitle": "Support_Vecto_Machine",
+      "Patterns": ["Support Vector Machine","support vector machine","SVM","svm","Svm","support vector machine",
+      "SUPPORT VECTOR MACHINE","support","vector","machine"],
+      "Categorization": "Train",
+      "def": "SupportVectorMachine"
     },
 
     "ScatterPlot": {
       "Title": "Scatter Plot",
       "SupportText": "Scatter Plot ScatterPlot scat plot",
+      "PatternTitle": "Scatter_Plot",
+      "Patterns": ["Scatter Plot","scatter plot","SCATTER PLOT","scatter","Scatter"],
       "Categorization": "Plot"
     },
     "BarChart": {
       "Title": "Bar Chart",
       "SupportText": "Bar Chart BarChart bar char",
+      "PatternTitle": "Bar_Chart",
+      "Patterns": ["Bar Chart","bar chart","BAR CHART","bar","BAR"],
       "Categorization": "Plot"
     },
     "Histogram": {
       "Title": "Histogram Chart",
       "SupportText": "Histogram Chart HistogramChart hist chart",
+      "PatternTitle": "Histogram_Chart",
+      "Patterns": ["Histogram Chart","histogram chart","histogram","Histogram","HISTOGRAM CHART"],
       "Categorization": "Plot"
     },
     "LineChart": {
       "Title": "Line Chart",
       "SupportText": "Line chart plot chart LineChart line",
-      "Categorization": "plot"
+      "PatternTitle": "Line_Chart",
+      "Patterns": ["Line Chart","lIne chart","LINE CHART","LIne","lIne"],
+      "Categorization": "Plot"
     },
     "Summary": {
       "Title": "Summary of Dataset",
       "SupportText": "dataset summary Data Summary",
+      "PatternTitle": "Summary",
+      "Patterns": ["Dataset Summary","dataset summary","Summary","summary","SUMMARY","DATASET SUMMARY"],
       "Categorization": "Display"
-    }
+    },
+    "Features": {
+      "Title": "Features of Dataset",
+      "PatternTitle": "Features",
+      "Patterns": ["features","Features","FEATURES"],
+      "Categorization": "Features"
+    },
+    "ChangeDatasets": {
+      "Title": "Change Dataset",
+      "PatternTitle": "Change_Dataset",
+      "Patterns": ["change dataset","use dataset","update dataset"],
+      "Categorization": "Change_Dataset"
+      },
+    "Continent": {
+      "Title": "Continent",
+      "PatternTitle": "Sort Charts by Continent",
+      "Patterns": ["continent,Continent,CONTINENT"],
+      "Categorisation": "Continent"
+    },
+    "Country": {
+      "Title": "Country",
+      "PatternTitle": "Sort Charts by Country",
+      "Patterns": ["country,Country,COUNTRY"],
+      "Categorisation": "Country"
+    },
+    "Date": {
+      "Title": "Date",
+      "PatternTitle": "Sort Charts by Date",
+      "Patterns": ["date","Date","DATE","dates","Dates","DATES"],
+      "Categorisation": "Date"
+    },
+    "Vaccine": {
+      "Title": "Vaccine",
+      "PatternTitle": "Sort Charts by Vaccine",
+      "Patterns": ["vaccine","Vaccine","VACCINE","vaccine type","Vaccine Type","VACCINE TYPE","drug","Drug",
+      "DRUG","drug type","Drug Type","DRUG TYPE"],
+      "Categorisation": "Vaccine"
+    },
+    "Age": {
+      "Title": "Age",
+      "PatternTitle": "Sort Charts by Age Group",
+      "Patterns": ["age","Age","AGE","age group","Age Group","AGE GROUP"],
+      "Categorisation": "AGE"
+      }
   }
 }
 
