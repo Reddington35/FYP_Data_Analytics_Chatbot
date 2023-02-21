@@ -11,7 +11,7 @@ import NLP
 # they may be interested in analysing, this method provides the user with the number of Rows,columns,and shape of the
 # desired Dataset they are working with while also providing the type of Data provided in each label
 def data_summary(dataset):
-    df = pd.read_csv(dataset['Location'], sep=',')
+    df = pd.read_csv(dataset['Location'],index_col=False)
     print("Data Summary:")
     print("The number of rows in this Dataset are " + str(len(df.index)))
     print("The number of columns in this dataset are " + str(len(df.columns)))
@@ -24,7 +24,7 @@ def data_summary(dataset):
     return df
 
 def data_plot(dataset, username, request):
-    df = pd.read_csv(dataset, sep=',')
+    df = pd.read_csv(dataset,index_col=False)
 
 def data_ml(dataset, username, request):
     df = pd.read_csv(dataset['Location'], sep=',')
@@ -74,6 +74,7 @@ def RandomForest(target, labels, dataset):
     print("predicting dataset")
     y_pred = clf.predict(X_test)
     print("Accuracy:", metrics.accuracy_score(y_test, y_pred))
+    
 def NaiveBayes(target, labels, dataset):
     print(dataset)
     newLabels = labels
@@ -145,7 +146,7 @@ def printChoices(df):
 # dataset
 def feature_selection(dataset):
     #opens the dataframe using pandas library
-    df = pd.read_csv(dataset['Location'], sep=',')
+    df = pd.read_csv(dataset['Location'], index_col=False)
     labels = df.columns.values
     labelView = ""
     # for loop uses modulus to print the label and move to the next line of the print
@@ -185,7 +186,7 @@ def load_dataset(statement,queryTexts,username):
         return dataset
 
 def change_Datasets(dataset):
-    df = pd.read_csv(dataset['Location'], sep=',')
+    df = pd.read_csv(dataset['Location'],index_col=False)
     return df
 
 # decision_handler method is used to manage basic yes or no patterns in questions
@@ -209,10 +210,10 @@ def user_login(login):
     login = login + " : "
     return login
 
-# find_target method searches the head of the dataset (the labels) and checks to see if their a match
+# find_target method searches the head of the dataset (the Features) and checks to see if their a match
 # with the user input
 def find_target(user_input, dataset):
-    df = pd.read_csv(dataset['Location'], sep=',')
+    df = pd.read_csv(dataset['Location'], index_col=False)
     if user_input in df.head(0):
         print("found")
         target = user_input

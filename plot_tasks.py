@@ -1,3 +1,4 @@
+import matplotlib.pyplot
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
@@ -6,7 +7,7 @@ import numpy as np
 # Function for plotting a Line Chart
 def make_line_chart(dataset,entry_field,exit_field,target,region,location,start_date,end_date,color):
      # read in dataframe
-     df = pd.read_csv(dataset['Location'], sep=',')
+     df = pd.read_csv(dataset['Location'],index_col=False)
      df = df[(df[entry_field] == region) & (df[exit_field] == location)]
      #print("result is ",df)
      # converts date string to date object using the pandas library
@@ -31,7 +32,7 @@ def make_line_chart(dataset,entry_field,exit_field,target,region,location,start_
 
 # Function for plotting a Scatter Plot
 def make_scatterplot(dataset,entry_field,exit_field,x,y,region,location,start_date,end_date,color):
-     df = pd.read_csv(dataset, sep=',')
+     df = pd.read_csv(dataset,index_col=False)
      df = df[(df[entry_field] == region) & (df[exit_field] == location)]
      print("result is ", df)
      df['date'] = pd.to_datetime(df['date'])
@@ -49,7 +50,7 @@ def make_scatterplot(dataset,entry_field,exit_field,x,y,region,location,start_da
 
 # Function for plotting Bar Chart
 def make_barchart(dataset,entry_field,exit_field,x,y,region,location,start_date,end_date,color):
-     df = pd.read_csv(dataset, sep=',')
+     df = pd.read_csv(dataset,index_col=False)
      df = df[(df[entry_field] == region) & (df[exit_field] == location)]
      print("result is ", df)
      df['date'] = pd.to_datetime(df['date'])
@@ -67,7 +68,7 @@ def make_barchart(dataset,entry_field,exit_field,x,y,region,location,start_date,
 
 # Function for plotting Bar Chart
 def make_histogram(dataset,entry_field,exit_field,x,region,location,start_date,end_date,color):
-     df = pd.read_csv(dataset, sep=',')
+     df = pd.read_csv(dataset, index_col=False)
      df = df[(df[entry_field] == region) & (df[exit_field] == location)]
      print("result is ", df)
      df['date'] = pd.to_datetime(df['date'])
@@ -81,4 +82,95 @@ def make_histogram(dataset,entry_field,exit_field,x,region,location,start_date,e
      plt.grid(True)
      plt.show()
 #make_histogram("datasets/covid_world.csv","continent","location","new_deaths","Europe","Ireland","2020-02-29","2023-01-15","purple")
+
+def dynamic_line_chart(dataset,x_input,y_input,username):
+     # read in dataframe
+     df = pd.read_csv(dataset["Location"], index_col=False)
+     print("Colin: Please enter name for the figure you are plotting")
+     fig = input(username)
+     print("Colin: Please enter a title for the graph")
+     title = input(username)
+     while x_input not in df.head(0):
+          print("Colin: Please enter x feature please")
+          x_input = input(username)
+     while y_input not in df.head(0):
+          print("Colin: Please enter y feature please")
+          y_input = input(username)
+     if x_input and y_input in df.head(0):
+          plt.figure(fig)
+          plt.plot(df[x_input], df[y_input])
+          plt.title(title)
+          plt.xlabel(x_input)
+          plt.ylabel(y_input)
+          plt.show()
+
+def dynamic_bar_chart(dataset,x_input,y_input,username):
+     # read in dataframe
+     df = pd.read_csv(dataset["Location"], index_col=False)
+     print("Colin: Please enter name for the figure you are plotting")
+     fig = input(username)
+     print("Colin: Please enter a title for the graph")
+     title = input(username)
+     while x_input not in df.head(0):
+          print("Colin: Please enter x feature please")
+          x_input = input(username)
+     while y_input not in df.head(0):
+          print("Colin: Please enter y feature please")
+          y_input = input(username)
+     if x_input and y_input in df.head(0):
+          plt.figure(fig)
+          df.plot.bar(x=x_input,y=y_input)
+          plt.title(title)
+          plt.xlabel(x_input)
+          plt.ylabel(y_input)
+          plt.show()
+
+def dynamic_scatter_chart(dataset,x_input,y_input,username):
+     # read in dataframe
+     df = pd.read_csv(dataset["Location"], index_col=False)
+     print("Colin: Please enter name for the figure you are plotting")
+     fig = input(username)
+     print("Colin: Please enter a title for the graph")
+     title = input(username)
+     while x_input not in df.head(0):
+          print("Colin: Please enter x feature please")
+          x_input = input(username)
+     while y_input not in df.head(0):
+          print("Colin: Please enter y feature please")
+          y_input = input(username)
+     if x_input and y_input in df.head(0):
+          plt.figure(fig)
+          plt.scatter(df[x_input],df[y_input])
+          plt.title(title)
+          plt.xlabel(x_input)
+          plt.ylabel(y_input)
+          plt.show()
+
+def dynamic_histogram(dataset,x_input,username):
+     # read in dataframe
+     df = pd.read_csv(dataset["Location"], index_col=False)
+     print("Colin: Please enter name for the figure you are plotting")
+     fig = input(username)
+     print("Colin: Please enter a title for the graph")
+     title = input(username)
+     print("Colin: Please enter x feature please")
+     x_input = input(username)
+     while x_input not in df.head(0):
+          print("Colin: Invalid feature, please enter a correct feature")
+          x_input = input(username)
+     if x_input in df.head(0):
+          print("here")
+          plt.figure(fig)
+          plt.hist(df[x_input],bins=10)
+          plt.title(title)
+          plt.xlabel(x_input)
+          plt.show()
+
+def filter_dataframe():
+     print('')
+
+
+
+
+
 

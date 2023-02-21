@@ -3,7 +3,12 @@ import json
 import Tasks
 import NLP
 
+import matplotlib.pyplot as plt
+import pandas as pd
+
 # Open json file
+import plot_tasks
+
 queryTexts = json.load(open("interpretation.json"))
 
 # member variables used in conjunction with json
@@ -54,7 +59,14 @@ def chatbot():
             elif request["Categorization"] == "Plot":
                 #Tasks.data_plot(dataset,task, request)
                 if request["Title"] == "Line Chart":
-                    NLP.world_dataset_region(dataset, username)
+                    #NLP.world_dataset_region(dataset, username)
+                    plot_tasks.dynamic_line_chart(dataset,task,task,username)
+                elif request["Title"] == "Bar Chart":
+                    plot_tasks.dynamic_bar_chart(dataset,task,task,username)
+                elif request["Title"] == "Scatter Plot":
+                    plot_tasks.dynamic_scatter_chart(dataset,task,task,username)
+                elif request["Title"] == "Histogram Chart":
+                    plot_tasks.dynamic_histogram(dataset,task,username)
 
             elif request["Categorization"] == "Train":
                 Tasks.data_ml(dataset, username, request)
@@ -75,3 +87,5 @@ def check_command(command, dataset,username):
 
 # Function call for chatbot
 chatbot()
+
+

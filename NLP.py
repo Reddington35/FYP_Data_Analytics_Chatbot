@@ -69,7 +69,7 @@ def date_check(text):
 # methods below used in testing, to see if a more dynamic method can be achieved using the graphing methods
 # presented in sample_chart file
 def region_check(user_input, dataset):
-    df = pd.read_csv(dataset['Location'], sep=',')
+    df = pd.read_csv(dataset['Location'],index_col=False)
     if geopolitical_term_check(user_input) in df['continent'].values:
         print("In continent column")
         cont_peram = 'continent'
@@ -85,7 +85,7 @@ def region_check(user_input, dataset):
         print("Please use exact case and spelling for labels for example: Europe")
 
 def set_start_date(user_input, dataset):
-    df = pd.read_csv(dataset['Location'], sep=',')
+    df = pd.read_csv(dataset['Location'],index_col=False)
     if date_check(user_input) in df['date'].values:
         print("In start date column")
         date_start = user_input
@@ -94,7 +94,7 @@ def set_start_date(user_input, dataset):
         print("Colin: Please use date format year-month-day, for example: 2020-02-29")
 
 def set_end_date(user_input, dataset):
-    df = pd.read_csv(dataset['Location'], sep=',')
+    df = pd.read_csv(dataset['Location'], index_col=False)
     if date_check(user_input) in df['date'].values:
         print("In end date column")
         date_end = user_input
@@ -133,5 +133,3 @@ def world_dataset_region(dataset, username):
             print("invalid chart")
         return username
 
-def line_chart(dataset,username,request):
-    print("Line Chart")
