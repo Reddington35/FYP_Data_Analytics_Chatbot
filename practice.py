@@ -12,12 +12,12 @@ matcher.add("Who",[nlp("Scatter plot"), nlp("scatterplot"),nlp("scat")])
 doc = nlp("Ireland is in ireland which is irish")
 matches = matcher(doc)
 matchesS = [nlp.vocab.strings[s[0]] for s in matches]
-print(nlp.vocab.strings)
-print(matchesS)
+#print(nlp.vocab.strings)
+#print(matchesS)
 target = "Ireland"
 if target in matchesS:
     print(target," Found!")
-print(matches)
+#print(matches)
 
 # #initilize the matcher with a shared vocab
 # matched = PhraseMatcher(nlp.vocab)
@@ -34,3 +34,9 @@ print(matches)
 # for match_id, start, end in matching:
 #  span = doc[start:end]
 #  print(span.text)
+
+
+
+doc = nlp("color pink black blue")
+for token in doc:
+    print(token.dep_)

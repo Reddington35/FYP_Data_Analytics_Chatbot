@@ -1,10 +1,8 @@
-import matplotlib.pyplot
 import matplotlib.pyplot as plt
 import pandas as pd
-import numpy as np
+import Tasks
 
 # World Dataset operations using different types of charts
-# Function for plotting a Line Chart
 def make_line_chart(dataset,entry_field,exit_field,target,region,location,start_date,end_date,color):
      # read in dataframe
      df = pd.read_csv(dataset['Location'],index_col=False)
@@ -103,6 +101,19 @@ def dynamic_line_chart(dataset,x_input,y_input,username):
           plt.xlabel(x_input)
           plt.ylabel(y_input)
           plt.show()
+     # Allow user to refine chart
+     refine = Tasks.decision_handler("Colin: Would you like to refine this graph",username)
+     while refine:
+          print("Colin: How would you like me to update your graph " + username.replace(':','').strip() + '?')
+          user = input(username)
+          col = "blue"
+          col = color_select(user)
+          plt.figure(fig)
+          plt.plot(df[x_input], df[y_input],color=col)
+          plt.title(title)
+          plt.xlabel(x_input)
+          plt.ylabel(y_input)
+          plt.show()
 
 def dynamic_bar_chart(dataset,x_input,y_input,username):
      # read in dataframe
@@ -119,7 +130,7 @@ def dynamic_bar_chart(dataset,x_input,y_input,username):
           y_input = input(username)
      if x_input and y_input in df.head(0):
           plt.figure(fig)
-          df.plot.bar(x=x_input,y=y_input)
+          plt.bar(df[x_input],df[y_input])
           plt.title(title)
           plt.xlabel(x_input)
           plt.ylabel(y_input)
@@ -166,8 +177,23 @@ def dynamic_histogram(dataset,x_input,username):
           plt.xlabel(x_input)
           plt.show()
 
-def filter_dataframe():
-     print('')
+def group_features(dataset):
+     df = pd.read_csv(dataset['Location'], index_col=False)
+     features = []
+     for feature in df.head(0):
+          features.append(f'{feature}')
+     data = features
+     return data
+#group_features("datasets/covid_World.csv")
+
+def color_select(user_input):
+     color = "blue"
+     color_select = ["red", "green","blue", "yellow", "purple", "orange", "cyan", "magenta", "pink", "black"]
+     for i in color_select:
+          if i in user_input.lower():
+               color = str(i)
+     return color
+
 
 
 

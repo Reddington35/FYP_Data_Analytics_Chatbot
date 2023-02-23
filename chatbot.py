@@ -2,13 +2,9 @@ import spacy as sp
 import json
 import Tasks
 import NLP
-
-import matplotlib.pyplot as plt
-import pandas as pd
-
-# Open json file
 import plot_tasks
 
+# Open json file
 queryTexts = json.load(open("interpretation.json"))
 
 # member variables used in conjunction with json
@@ -21,7 +17,6 @@ done = False
 # Nlp model chosen for the chatbot
 sp.prefer_gpu()
 nlp = sp.load("en_core_web_lg")
-
 
 # This is the main function of the chatbot and will handle any conversational functionality
 # this method is primarily used to decipher the Dataset chosen,Approach such as training or plotting

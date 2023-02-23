@@ -1,8 +1,6 @@
 import pandas as pd
 import spacy as sp
 from spacy.matcher import PhraseMatcher
-
-# Nlp model chosen for the chatbot
 import Tasks
 import plot_tasks
 
@@ -53,7 +51,9 @@ def geopolitical_term_check(text):
         #print(entity.label_)
         if entity.label_ == "GPE" or entity.label_ == "LOC":
             gpe_list.append(entity.text)
+            #print(entity.text)
     return gpe_list
+geopolitical_term_check("country is Ireland")
 
 # the date_check method is similar to the geopolitical_term_check method only checks for dates
 def date_check(text):
@@ -62,6 +62,7 @@ def date_check(text):
     for entity in doc.ents:
         if entity.label_ == "DATE":
             date_time.append(entity.text)
+        print(date_time)
     return date_time
 
 #print(geopolitical_term_check("scatter plot"))
