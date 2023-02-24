@@ -53,7 +53,7 @@ def geopolitical_term_check(text):
             gpe_list.append(entity.text)
             #print(entity.text)
     return gpe_list
-geopolitical_term_check("country is Ireland")
+#geopolitical_term_check("country is Ireland")
 
 # the date_check method is similar to the geopolitical_term_check method only checks for dates
 def date_check(text):

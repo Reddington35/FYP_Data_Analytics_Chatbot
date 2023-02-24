@@ -102,18 +102,26 @@ def dynamic_line_chart(dataset,x_input,y_input,username):
           plt.ylabel(y_input)
           plt.show()
      # Allow user to refine chart
-     refine = Tasks.decision_handler("Colin: Would you like to refine this graph",username)
+     #refine = Tasks.decision_handler("Colin: Would you like to refine this graph",username)
+     refine = True
      while refine:
-          print("Colin: How would you like me to update your graph " + username.replace(':','').strip() + '?')
+          #print("Colin: How would you like me to update your graph " + username.replace(':','').strip() + '?')
+          print("Colin: Would you like to refine this graph " + username.replace(':','').strip() + "?")
           user = input(username)
           col = "blue"
-          col = color_select(user)
-          plt.figure(fig)
-          plt.plot(df[x_input], df[y_input],color=col)
-          plt.title(title)
-          plt.xlabel(x_input)
-          plt.ylabel(y_input)
-          plt.show()
+          if user.lower() in ('y', 'yes'):
+               print("Colin: How would you like me to update your graph " + username.replace(':', '').strip() + '?')
+               user = input(username)
+               col = color_select(user)
+               x_input = change_x_input(user,dataset,x_input)
+               plt.figure(fig)
+               plt.plot(df[x_input], df[y_input],color=col)
+               plt.title(title)
+               plt.xlabel(x_input)
+               plt.ylabel(y_input)
+               plt.show()
+          if user.lower() in ('n', 'no'):
+               refine = False
 
 def dynamic_bar_chart(dataset,x_input,y_input,username):
      # read in dataframe
@@ -193,6 +201,28 @@ def color_select(user_input):
           if i in user_input.lower():
                color = str(i)
      return color
+
+def change_x_input(user_input,dataset,x_input):
+     x = x_input
+     x_list = ["change x input","change x co-ordinate","change x","update x","update x co-ordinate",
+                "change x coordinate","change x coordinate","x="]
+     features = group_features(dataset)
+     # check if command is looking for X
+     target_x = ""
+     for x1 in x_list:
+          if x1 in user_input:
+               # get x value at end of string
+               if "=" in user_input:
+                    target_x = user_input[user_input.rfind("=")+1:]
+               else:
+                    target_x = user_input[user_input.rfind(" ")+1:]
+               if target_x in features:
+                    return target_x
+     return x
+
+def commands(user_input,dataset):
+     features = group_features(dataset)
+     commands = ["change x","change y","filter","change figure","change title"]
 
 
 
