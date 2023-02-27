@@ -102,25 +102,52 @@ def dynamic_line_chart(dataset,x_input,y_input,username):
           plt.ylabel(y_input)
           plt.show()
      # Allow user to refine chart
-     #refine = Tasks.decision_handler("Colin: Would you like to refine this graph",username)
      refine = True
      while refine:
-          #print("Colin: How would you like me to update your graph " + username.replace(':','').strip() + '?')
-          print("Colin: Would you like to refine this graph " + username.replace(':','').strip() + "?")
-          user = input(username)
-          col = "blue"
-          if user.lower() in ('y', 'yes'):
-               print("Colin: How would you like me to update your graph " + username.replace(':', '').strip() + '?')
-               user = input(username)
-               col = color_select(user)
-               x_input = change_x_input(user,dataset,x_input)
+          print("Colin: How would you like me to Refine this graph " + username.replace(':','').strip() + "?\n"
+                "Colin: Type 'help' if you require any assistance with this feature")
+          user_command = input(username)
+          if "help" in user_command.lower():
+               help_screen()
+          # filter command
+          filter_dataset(dataset, user_command, username)
+          if user_command.lower().strip() not in ('quit'):
+               commands_list = user_command.split(",")
+               col = "blue"
+               for c in commands_list:
+                    if len(c.lower().strip()) > 3:
+                         col = color_select(c)
+                         is_refined = False
+                         new_x_input = change_x_input(c, dataset, x_input)
+                         if new_x_input != x_input:
+                              print("Colin: Updated X from " + x_input + " to " + new_x_input)
+                              x_input = new_x_input
+                              is_refined = True
+                         if not is_refined:
+                              new_y_input = change_y_input(c, dataset, y_input)
+                              if new_y_input != y_input:
+                                   print("Colin: Updated Y from " + y_input + " to " + new_y_input)
+                                   y_input = new_y_input
+                                   is_refined = True
+                         if not is_refined:
+                              new_title = change_title_input(c, title)
+                              if new_title != title:
+                                   print("Colin: Updated title from " + title + " to " + new_title)
+                                   title = new_title
+                                   is_refined = True
+                         if not is_refined:
+                              new_fig = change_figure_input(c, fig)
+                              if new_fig != fig:
+                                   print("Colin: Updated figure from " + fig + " to " + new_fig)
+                                   fig = new_fig
+                                   is_refined = True
                plt.figure(fig)
-               plt.plot(df[x_input], df[y_input],color=col)
+               plt.plot(df[x_input], df[y_input], color=col)
                plt.title(title)
                plt.xlabel(x_input)
                plt.ylabel(y_input)
                plt.show()
-          if user.lower() in ('n', 'no'):
+          else:
                refine = False
 
 def dynamic_bar_chart(dataset,x_input,y_input,username):
@@ -143,6 +170,54 @@ def dynamic_bar_chart(dataset,x_input,y_input,username):
           plt.xlabel(x_input)
           plt.ylabel(y_input)
           plt.show()
+     # Allow user to refine chart
+     refine = True
+     while refine:
+          print("Colin: How would you like me to Refine this graph " + username.replace(':', '').strip() + "?\n"
+                "Colin: Type 'help' if you require any assistance with this feature")
+          user_command = input(username)
+          if "help" in user_command.lower():
+               help_screen()
+          # filter command
+          filter_dataset(dataset, user_command, username)
+          if user_command.lower().strip() not in ('quit'):
+               commands_list = user_command.split(",")
+               col = "blue"
+               for c in commands_list:
+                    if len(c.lower().strip()) > 3:
+                         col = color_select(c)
+                         is_refined = False
+                         new_x_input = change_x_input(c, dataset, x_input)
+                         if new_x_input != x_input:
+                              print("Colin: Updated X from " + x_input + " to " + new_x_input)
+                              x_input = new_x_input
+                              is_refined = True
+                         if not is_refined:
+                              new_y_input = change_y_input(c, dataset, y_input)
+                              if new_y_input != y_input:
+                                   print("Colin: Updated Y from " + y_input + " to " + new_y_input)
+                                   y_input = new_y_input
+                                   is_refined = True
+                         if not is_refined:
+                              new_title = change_title_input(c, title)
+                              if new_title != title:
+                                   print("Colin: Updated title from " + title + " to " + new_title)
+                                   title = new_title
+                                   is_refined = True
+                         if not is_refined:
+                              new_fig = change_figure_input(c, fig)
+                              if new_fig != fig:
+                                   print("Colin: Updated figure from " + fig + " to " + new_fig)
+                                   fig = new_fig
+                                   is_refined = True
+               plt.figure(fig)
+               plt.bar(df[x_input], df[y_input], color=col)
+               plt.title(title)
+               plt.xlabel(x_input)
+               plt.ylabel(y_input)
+               plt.show()
+          else:
+               refine = False
 
 def dynamic_scatter_chart(dataset,x_input,y_input,username):
      # read in dataframe
@@ -164,6 +239,54 @@ def dynamic_scatter_chart(dataset,x_input,y_input,username):
           plt.xlabel(x_input)
           plt.ylabel(y_input)
           plt.show()
+     # Allow user to refine chart
+     refine = True
+     while refine:
+          print("Colin: How would you like me to Refine this graph " + username.replace(':', '').strip() + "?\n"
+               "Colin: Type 'help' if you require any assistance with this feature")
+          user_command = input(username)
+          if "help" in user_command.lower():
+               help_screen()
+          # filter command
+          filter_dataset(dataset, user_command, username)
+          if user_command.lower().strip() not in ('quit'):
+               commands_list = user_command.split(",")
+               col = "blue"
+               for c in commands_list:
+                    if len(c.lower().strip()) > 3:
+                         col = color_select(c)
+                         is_refined = False
+                         new_x_input = change_x_input(c, dataset, x_input)
+                         if new_x_input != x_input:
+                              print("Colin: Updated X from " + x_input + " to " + new_x_input)
+                              x_input = new_x_input
+                              is_refined = True
+                         if not is_refined:
+                              new_y_input = change_y_input(c, dataset, y_input)
+                              if new_y_input != y_input:
+                                   print("Colin: Updated Y from " + y_input + " to " + new_y_input)
+                                   y_input = new_y_input
+                                   is_refined = True
+                         if not is_refined:
+                              new_title = change_title_input(c, title)
+                              if new_title != title:
+                                   print("Colin: Updated title from " + title + " to " + new_title)
+                                   title = new_title
+                                   is_refined = True
+                         if not is_refined:
+                              new_fig = change_figure_input(c, fig)
+                              if new_fig != fig:
+                                   print("Colin: Updated figure from " + fig + " to " + new_fig)
+                                   fig = new_fig
+                                   is_refined = True
+               plt.figure(fig)
+               plt.scatter(df[x_input], df[y_input], color=col)
+               plt.title(title)
+               plt.xlabel(x_input)
+               plt.ylabel(y_input)
+               plt.show()
+          else:
+               refine = False
 
 def dynamic_histogram(dataset,x_input,username):
      # read in dataframe
@@ -174,16 +297,61 @@ def dynamic_histogram(dataset,x_input,username):
      title = input(username)
      print("Colin: Please enter x feature please")
      x_input = input(username)
+     print("Colin: Please enter number of bins needed")
+     bin = input(username)
      while x_input not in df.head(0):
           print("Colin: Invalid feature, please enter a correct feature")
           x_input = input(username)
      if x_input in df.head(0):
-          print("here")
           plt.figure(fig)
-          plt.hist(df[x_input],bins=10)
+          plt.hist(df[x_input],bins=int(bin))
           plt.title(title)
           plt.xlabel(x_input)
           plt.show()
+     # Allow user to refine chart
+     refine = True
+     while refine:
+          print("Colin: How would you like me to Refine this graph " + username.replace(':', '').strip() + "?\n"
+               "Colin: Type 'help' if you require any assistance with this feature")
+          user_command = input(username)
+          if "help" in user_command.lower():
+               help_screen()
+          # filter command
+          filter_dataset(dataset, user_command, username)
+          if user_command.lower().strip() not in ('quit'):
+               commands_list = user_command.split(",")
+               col = "blue"
+               for c in commands_list:
+                    if len(c.lower().strip()) > 3:
+                         col = color_select(c)
+                         is_refined = False
+                         new_x_input = change_x_input(c, dataset, x_input)
+
+                         if new_x_input != x_input:
+                              print("Colin: Updated X from " + x_input + " to " + new_x_input)
+                              x_input = new_x_input
+                              is_refined = True
+
+                         if not is_refined:
+                              new_title = change_title_input(c, title)
+                              if new_title != title:
+                                   print("Colin: Updated title from " + title + " to " + new_title)
+                                   title = new_title
+                                   is_refined = True
+
+                         if not is_refined:
+                              new_fig = change_figure_input(c, fig)
+                              if new_fig != fig:
+                                   print("Colin: Updated figure from " + fig + " to " + new_fig)
+                                   fig = new_fig
+                                   is_refined = True
+               plt.figure(fig)
+               plt.hist(df[x_input], color=col)
+               plt.title(title)
+               plt.xlabel(x_input)
+               plt.show()
+          else:
+               refine = False
 
 def group_features(dataset):
      df = pd.read_csv(dataset['Location'], index_col=False)
@@ -207,7 +375,7 @@ def change_x_input(user_input,dataset,x_input):
      x_list = ["change x input","change x co-ordinate","change x","update x","update x co-ordinate",
                 "change x coordinate","change x coordinate","x="]
      features = group_features(dataset)
-     # check if command is looking for X
+     # check if command is looking for Y
      target_x = ""
      for x1 in x_list:
           if x1 in user_input:
@@ -215,14 +383,92 @@ def change_x_input(user_input,dataset,x_input):
                if "=" in user_input:
                     target_x = user_input[user_input.rfind("=")+1:]
                else:
+                    # assume space seperates value
                     target_x = user_input[user_input.rfind(" ")+1:]
                if target_x in features:
                     return target_x
      return x
 
-def commands(user_input,dataset):
+
+def change_y_input(user_input,dataset,y_input):
+     y = y_input
+     y_command =["y=","y =","change y to","update y to"]
      features = group_features(dataset)
-     commands = ["change x","change y","filter","change figure","change title"]
+     # check if command is looking for Y
+     target_y = ""
+     for y1 in y_command:
+          if y1 in user_input:
+               # get x value at end of string
+               if "=" in user_input:
+                    target_y = user_input[user_input.rfind("=")+1:]
+               else:
+                    target_y = user_input[user_input.rfind(" ")+1:]
+               if target_y in features:
+                    return target_y
+     return y
+
+def change_title_input(user_input,t_input):
+     t = t_input
+     titles = ["title="]
+     # check if command is looking for Y
+     target_title = ""
+     for t1 in titles:
+          if t1 in user_input:
+               # get x value at end of string
+               if "=" in user_input:
+                    target_title = user_input[user_input.rfind("=")+1:]
+               else:
+                    target_title = user_input[user_input.rfind(" ")+1:]
+               return target_title
+     return t
+
+def change_figure_input(user_input,f_input):
+     f = f_input
+     figure = ["figure="]
+     # check if command is looking for Y
+     target_figure = ""
+     for f1 in figure:
+          if f1 in user_input:
+               # get x value at end of string
+               if "=" in user_input:
+                    target_figure = user_input[user_input.rfind("=")+1:]
+               else:
+                    target_figure = user_input[user_input.rfind(" ")+1:]
+               return target_figure
+     return f
+
+def change_bin_input(user_input):
+     print("")
+
+def help_screen():
+     print("Colin: You can refine the graph by placing '=' in front of the graph feature you wish to update\n"
+                "for Example:\n"
+                "-x=Feature Name\n-y=Feature Name\n-title=Name of Chart\n-figure=Name of Figure\n"
+                "-Fields are ',' separated\n"
+                "For Example:  title=Title Name,figure=Name of Figure\n"
+                "Colin: If your finished refining the graph please reply 'quit' as your response\n")
+
+def filter_dataset(dataset,command,username):
+     features = group_features(dataset)
+     #filter_greater = ["filter by"]
+     if command[0:6] == "filter":
+          command = command[7:]
+         # Check for opperators (>,<,=,<>)
+          if ">" in command:
+               column = command[0: command.find(">")].lower().strip()
+               value = command[command.find(">")+1:].lower().strip()
+               print(column + "by" + value)
+          elif "<" in command:
+               column = command[0: command.find("<")].lower().strip()
+               value = command[command.find("<")+1:].lower().strip()
+               print(column + "by" + value)
+          elif "=" in command:
+               column = command[0: command.find("=")].lower().strip()
+               value = command[command.find("=")+1:].lower().strip()
+               print(column,value)
+
+
+
 
 
 
