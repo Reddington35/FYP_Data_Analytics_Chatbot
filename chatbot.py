@@ -46,7 +46,7 @@ def chatbot():
         request = check_command(task, queryTexts["Approach"],username)
 
         if request == "Done":
-            print("Goodbye " + username.replace(':',''))
+            print("Colin: signing you out now " + username.replace(':',''))
         else:
             if request["Categorization"] == "Change_Dataset":
                 dataset = Tasks.load_dataset(task, queryTexts, username)
@@ -71,14 +71,24 @@ def chatbot():
 
             elif request["Categorization"] == "Features":
                 Tasks.feature_selection(dataset)
+    customer_feedback(username)
 
 def check_command(command, dataset,username):
     if "quit" in command.lower() or "exit" in command.lower():
-        if Tasks.decision_handler("Colin: Do you wish to quit chatting " + username.replace(":",""),username):
+        if Tasks.decision_handler("Colin: Do you wish to quit chatting " + username.replace(":","").strip(),username):
             global done
             done = True
             return "Done"
     return NLP.phrase_match(command, dataset)
+
+def customer_feedback(username):
+    choices = []
+    Tasks.decision_handler("Colin: Before I complete signing you out of the chat,"
+                           " Would you mind completing some short feedback questions"
+                           " on your user experience " + username.replace(":","").strip() + '?',username)
+    print("Colin: Excellent")
+    print("Welcome to customer feedback\n*****************************")
+    print("Colin: ")
 
 # Function call for chatbot
 chatbot()

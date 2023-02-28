@@ -89,9 +89,11 @@ def dynamic_line_chart(dataset,x_input,y_input,username):
      print("Colin: Please enter a title for the graph")
      title = input(username)
      while x_input not in df.head(0):
+          Tasks.feature_selection(dataset)
           print("Colin: Please enter x feature please")
           x_input = input(username)
      while y_input not in df.head(0):
+          Tasks.feature_selection(dataset)
           print("Colin: Please enter y feature please")
           y_input = input(username)
      if x_input and y_input in df.head(0):
@@ -108,7 +110,8 @@ def dynamic_line_chart(dataset,x_input,y_input,username):
                 "Colin: Type 'help' if you require any assistance with this feature")
           user_command = input(username)
           if "help" in user_command.lower():
-               help_screen()
+               help_screen(dataset)
+
           # filter command
           filter_dataset(dataset, user_command, username)
           if user_command.lower().strip() not in ('quit'):
@@ -158,9 +161,11 @@ def dynamic_bar_chart(dataset,x_input,y_input,username):
      print("Colin: Please enter a title for the graph")
      title = input(username)
      while x_input not in df.head(0):
+          Tasks.feature_selection(dataset)
           print("Colin: Please enter x feature please")
           x_input = input(username)
      while y_input not in df.head(0):
+          Tasks.feature_selection(dataset)
           print("Colin: Please enter y feature please")
           y_input = input(username)
      if x_input and y_input in df.head(0):
@@ -177,9 +182,8 @@ def dynamic_bar_chart(dataset,x_input,y_input,username):
                 "Colin: Type 'help' if you require any assistance with this feature")
           user_command = input(username)
           if "help" in user_command.lower():
-               help_screen()
-          # filter command
-          filter_dataset(dataset, user_command, username)
+               help_screen(dataset)
+
           if user_command.lower().strip() not in ('quit'):
                commands_list = user_command.split(",")
                col = "blue"
@@ -227,9 +231,11 @@ def dynamic_scatter_chart(dataset,x_input,y_input,username):
      print("Colin: Please enter a title for the graph")
      title = input(username)
      while x_input not in df.head(0):
+          Tasks.feature_selection(dataset)
           print("Colin: Please enter x feature please")
           x_input = input(username)
      while y_input not in df.head(0):
+          Tasks.feature_selection(dataset)
           print("Colin: Please enter y feature please")
           y_input = input(username)
      if x_input and y_input in df.head(0):
@@ -245,10 +251,10 @@ def dynamic_scatter_chart(dataset,x_input,y_input,username):
           print("Colin: How would you like me to Refine this graph " + username.replace(':', '').strip() + "?\n"
                "Colin: Type 'help' if you require any assistance with this feature")
           user_command = input(username)
+
           if "help" in user_command.lower():
-               help_screen()
-          # filter command
-          filter_dataset(dataset, user_command, username)
+               help_screen(dataset)
+
           if user_command.lower().strip() not in ('quit'):
                commands_list = user_command.split(",")
                col = "blue"
@@ -300,6 +306,7 @@ def dynamic_histogram(dataset,x_input,username):
      print("Colin: Please enter number of bins needed")
      bin = input(username)
      while x_input not in df.head(0):
+          Tasks.feature_selection(dataset)
           print("Colin: Invalid feature, please enter a correct feature")
           x_input = input(username)
      if x_input in df.head(0):
@@ -315,9 +322,8 @@ def dynamic_histogram(dataset,x_input,username):
                "Colin: Type 'help' if you require any assistance with this feature")
           user_command = input(username)
           if "help" in user_command.lower():
-               help_screen()
-          # filter command
-          filter_dataset(dataset, user_command, username)
+               help_screen(dataset)
+
           if user_command.lower().strip() not in ('quit'):
                commands_list = user_command.split(",")
                col = "blue"
@@ -345,6 +351,12 @@ def dynamic_histogram(dataset,x_input,username):
                                    print("Colin: Updated figure from " + fig + " to " + new_fig)
                                    fig = new_fig
                                    is_refined = True
+                         if not is_refined:
+                              new_bin = change_bin_input(c,bin)
+                              if new_bin.isdigit() != bin.isdigit():
+                                   print("Colin: Updated title from " + bin + " to " + new_bin)
+                                   bin = new_bin
+                                   is_refined = True
                plt.figure(fig)
                plt.hist(df[x_input], color=col)
                plt.title(title)
@@ -363,8 +375,10 @@ def group_features(dataset):
 #group_features("datasets/covid_World.csv")
 
 def color_select(user_input):
+     # Default color set
      color = "blue"
      color_select = ["red", "green","blue", "yellow", "purple", "orange", "cyan", "magenta", "pink", "black"]
+     # loops through all colors until matched with user input
      for i in color_select:
           if i in user_input.lower():
                color = str(i)
@@ -375,7 +389,7 @@ def change_x_input(user_input,dataset,x_input):
      x_list = ["change x input","change x co-ordinate","change x","update x","update x co-ordinate",
                 "change x coordinate","change x coordinate","x="]
      features = group_features(dataset)
-     # check if command is looking for Y
+     # check if command is looking for x
      target_x = ""
      for x1 in x_list:
           if x1 in user_input:
@@ -398,7 +412,7 @@ def change_y_input(user_input,dataset,y_input):
      target_y = ""
      for y1 in y_command:
           if y1 in user_input:
-               # get x value at end of string
+               # get y value at end of string
                if "=" in user_input:
                     target_y = user_input[user_input.rfind("=")+1:]
                else:
@@ -410,11 +424,11 @@ def change_y_input(user_input,dataset,y_input):
 def change_title_input(user_input,t_input):
      t = t_input
      titles = ["title="]
-     # check if command is looking for Y
+     # check if command is looking for title
      target_title = ""
      for t1 in titles:
           if t1 in user_input:
-               # get x value at end of string
+               # get title string at end of string
                if "=" in user_input:
                     target_title = user_input[user_input.rfind("=")+1:]
                else:
@@ -425,11 +439,11 @@ def change_title_input(user_input,t_input):
 def change_figure_input(user_input,f_input):
      f = f_input
      figure = ["figure="]
-     # check if command is looking for Y
+     # check if command is looking for figure
      target_figure = ""
      for f1 in figure:
           if f1 in user_input:
-               # get x value at end of string
+               # get figure at end of string
                if "=" in user_input:
                     target_figure = user_input[user_input.rfind("=")+1:]
                else:
@@ -437,13 +451,28 @@ def change_figure_input(user_input,f_input):
                return target_figure
      return f
 
-def change_bin_input(user_input):
-     print("")
+def change_bin_input(user_input,b_input):
+     b = b_input
+     bins = ["bins="]
+     # check if command is looking for bins
+     target_bins = ""
+     for b1 in bins:
+          if b1 in user_input:
+               # get bin value at end of string
+               if "=" in user_input:
+                    target_bins = user_input[user_input.rfind("=") + 1:]
+               else:
+                    target_bins = user_input[user_input.rfind(" ") + 1:]
+               return target_bins
+     return b
 
-def help_screen():
+def help_screen(dataset):
+     #print Features, with clear instructions for each command needed for graph refinement process
+     Tasks.feature_selection(dataset)
      print("Colin: You can refine the graph by placing '=' in front of the graph feature you wish to update\n"
                 "for Example:\n"
-                "-x=Feature Name\n-y=Feature Name\n-title=Name of Chart\n-figure=Name of Figure\n"
+                "-x=Feature Name\n-y=Feature Name\n-title=Name of Chart\n-figure=Name of Figure\n-bins=number of bins"
+                " (Histogram only)"
                 "-Fields are ',' separated\n"
                 "For Example:  title=Title Name,figure=Name of Figure\n"
                 "Colin: If your finished refining the graph please reply 'quit' as your response\n")

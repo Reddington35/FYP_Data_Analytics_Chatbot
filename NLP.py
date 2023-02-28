@@ -21,7 +21,7 @@ def phrase_match(user_input, dataset):
 
         if len(matched) > 0:
             break;
-        user_input = input("colin: Which task would you like me to perform for you\nResponse: ")
+        user_input = input("colin: Sorry I did not quiet catch that, could you rephrase please\nResponse: ")
         print("Colin: Thank you for clearing that up")
     return dataset[matched[0]]
 
@@ -39,7 +39,6 @@ def label_match(user_input, dataset):
         user_input = input("colin: Cannot find feature could you please type exact spelling for given feature"
                            "\nResponse: ")
         print("Colin: Thank you for clearing that up")
-
     return matched
 
 # the geopolitical_term_check method is used to identify whether a dataset is a GPE or LOC, then if the condition is met

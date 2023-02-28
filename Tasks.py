@@ -201,6 +201,7 @@ def decision_handler(question,username):
         print(question.lower())
         summary = input(username)
     if summary == "yes" or summary == 'y':
+        print("Colin: Thank You " + username.replace(':','').strip())
         return True
     else:
         return False
