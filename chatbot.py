@@ -3,7 +3,10 @@ import json
 import Tasks
 import NLP
 import plot_tasks
+import pickle
 
+# Global list to be used with record conversation
+user_details = []
 # Open json file
 queryTexts = json.load(open("interpretation.json"))
 
@@ -24,9 +27,10 @@ nlp = sp.load("en_core_web_lg")
 # and operate the chatbot with the functions written to improve its mechanics
 def chatbot():
     print("Colin: Hi my name is Colin, your Covid-19 chatbot, who am i talking to?")
-    login = input("User :")
-    username = Tasks.user_login(login)
+    login = input("User:")
+    username = user_login(login)
     print("Colin: Hello " + username.replace(':',',') + "Which dataset will we be working with today?")
+
     # statement takes in the user input in lowercase
     statement = input(username)
     statement = statement.lower()
@@ -82,13 +86,45 @@ def check_command(command, dataset,username):
     return NLP.phrase_match(command, dataset)
 
 def customer_feedback(username):
-    choices = []
-    Tasks.decision_handler("Colin: Before I complete signing you out of the chat,"
+    user_complete = Tasks.decision_handler("Colin: Before I complete signing you out of the chat,"
                            " Would you mind completing some short feedback questions"
-                           " on your user experience " + username.replace(":","").strip() + '?',username)
-    print("Colin: Excellent")
-    print("Welcome to customer feedback\n*****************************")
-    print("Colin: ")
+                           " on your user experience " + username.replace(":","").strip() + "?",username)
+    if user_complete:
+        print("Colin: Excellent")
+        print("Welcome to customer feedback\n*****************************")
+        record_chat("Colin: Did you have any trouble with the Machine Learning feature of this application,"
+                    "if so which feature did you have trouble using?",username)
+        record_chat("Colin: Did you have any trouble with the Dynamic Graphing feature of this application,"
+                    "if so which feature did you have trouble using?",username)
+        record_chat("Colin: Did you find me efficient,in how I performed the tasks asked of me, if not where "
+                    "in your opinion could I improve?",username)
+        deserialise_user(username)
+
+def record_chat(colin, username):
+    print(colin)
+    user = input(username)
+    add_user(username)
+    user_details.append(colin)
+    user_details.append(user)
+    with open('Users/'+ username.replace(':','').strip() +'.pkl', 'wb') as f:
+        pickle.dump(user_details, f)
+
+def deserialise_user(username):
+    with open('Users/'+ username.replace(':','').strip() +'.pkl', 'rb') as f:
+        users = add_user(username)
+        if username in users:
+            print_feedback_chat = pickle.load(f)
+            print(print_feedback_chat)
+
+# method for identifying user login details
+def user_login(login):
+    login = login + " : "
+    return login
+
+def add_user(username):
+    users = []
+    users.append(username)
+    return users
 
 # Function call for chatbot
 chatbot()

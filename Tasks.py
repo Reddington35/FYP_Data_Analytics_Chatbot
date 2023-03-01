@@ -206,11 +206,6 @@ def decision_handler(question,username):
     else:
         return False
 
-# method for identifying user login details
-def user_login(login):
-    login = login + " : "
-    return login
-
 # find_target method searches the head of the dataset (the Features) and checks to see if their a match
 # with the user input
 def find_target(user_input, dataset):
