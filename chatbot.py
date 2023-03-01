@@ -5,7 +5,6 @@ import NLP
 import plot_tasks
 import pickle
 
-# new comment
 # Global list to be used with record conversation
 user_details = []
 # Open json file
