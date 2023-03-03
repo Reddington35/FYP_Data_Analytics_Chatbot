@@ -1,3 +1,5 @@
+from os.path import isfile
+from datetime import datetime
 import spacy as sp
 import json
 import Tasks
@@ -5,8 +7,10 @@ import NLP
 import plot_tasks
 import pickle
 
-# Global list to be used with record conversation
+# Global list to be used with record feedback
 user_details = []
+# Global list to be used with record conversation
+conversation = []
 # Open json file
 queryTexts = json.load(open("interpretation.json"))
 
@@ -29,7 +33,15 @@ def chatbot():
     print("Colin: Hi my name is Colin, your Covid-19 chatbot, who am i talking to?")
     login = input("User:")
     username = user_login(login)
-    print("Colin: Hello " + username.replace(':',',') + "Which dataset will we be working with today?")
+    path = "Users/" + username.replace(':','').strip() + ".pkl"
+    if isfile(path):
+        preferences = Tasks.decision_handler("Colin: Hello again " + username.replace(':','').strip() +
+                                            " Would you like to see a transcript of our previous conversation?",username)
+        if preferences:
+            print("Previous Conversation with User " + username.replace(':','').strip()
+                  + "\n****************************" )
+            deserialise_user(username)
+    print("Colin: " + "So " + username.replace(':','').strip() + " Which dataset will we be working with today?")
 
     # statement takes in the user input in lowercase
     statement = input(username)
@@ -89,6 +101,8 @@ def customer_feedback(username):
     user_complete = Tasks.decision_handler("Colin: Before I complete signing you out of the chat,"
                            " Would you mind completing some short feedback questions"
                            " on your user experience " + username.replace(":","").strip() + "?",username)
+    if not user_complete:
+        print("Colin: Thank You " + username.replace(':','').strip() + " and have a good day")
     if user_complete:
         print("Colin: Excellent")
         print("Welcome to customer feedback\n*****************************")
@@ -98,14 +112,14 @@ def customer_feedback(username):
                     "if so which feature did you have trouble using?",username)
         record_chat("Colin: Did you find me efficient,in how I performed the tasks asked of me, if not where "
                     "in your opinion could I improve?",username)
-        deserialise_user(username)
+        print("Colin: Thank You " + username.replace(':','').strip() + " and have a good day")
 
 def record_chat(colin, username):
     print(colin)
     user = input(username)
     add_user(username)
     user_details.append(colin)
-    user_details.append(user)
+    user_details.append(username + user)
     with open('Users/'+ username.replace(':','').strip() +'.pkl', 'wb') as f:
         pickle.dump(user_details, f)
 
@@ -114,7 +128,8 @@ def deserialise_user(username):
         users = add_user(username)
         if username in users:
             print_feedback_chat = pickle.load(f)
-            print(print_feedback_chat)
+            for p in print_feedback_chat:
+                print(p)
 
 # method for identifying user login details
 def user_login(login):
@@ -126,7 +141,25 @@ def add_user(username):
     users.append(username)
     return users
 
+def print_and_log(message):
+    start_time = datetime.now()
+    if len(message > 0):
+        conversation.append(message)
+    end_date = datetime.now()
+    print(message)
+
+def input_and_log(message,username):
+    start_date = datetime.now()
+    if len(message > 0):
+        conversation.append(message)
+    user_input = input(username)
+    if len(user_input > 0):
+        conversation.append(user_input)
+    end_date = datetime.now()
+    return user_input
+
 # Function call for chatbot
 chatbot()
+
 
 

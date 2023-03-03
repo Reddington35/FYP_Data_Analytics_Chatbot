@@ -5,15 +5,17 @@
       "SupportText": "COVID-19 HSE Daily Vaccination Figures Ireland covid eire Irish ire Republic state",
       "PatternTitle": "Dataset_Irl",
       "Patterns": ["COVID-19 HSE Daily Vaccination Figures Ireland 2021/04/07 - 2022/12/04 ","Irish","irish",
-        "ire","Irish Dataset","irish dataset","Ireland","IRELAND","ireland"],
+        "ire","Irish Dataset","irish dataset","Ireland","IRELAND","ireland","republic of ireland","Republic of Ireland",
+        "REPUBLIC OF IRELAND"],
       "Location": "datasets/covid_Ireland.csv"
     },
     "EU_Covid": {
       "Title":"Data on COVID-19 vaccination in the EU/EEA 2020-W53 - 2022-W52",
       "SupportText": "COVID-19 vaccination EU/EEA EU covid eu europe european union",
       "PatternTitle": "Dataset_EU",
-      "Patterns": ["COVID-19 vaccination EU/EEA EU covid","eu","EU","E.U","europe","Europe","european union"
-      ,"European Union","euro","eu dataset","EU Dataset","european dataset","European Dataset"],
+      "Patterns": ["COVID-19 vaccination EU/EEA EU covid","eu","EU","E.U","europe","Europe","EUROPE","european union"
+      ,"European Union","EUROPEAN UNION","euro","Euro","EURO","eu dataset","EU Dataset","european dataset",
+        "European Dataset"],
       "Location": "datasets/covid_EU.csv"
     },
     "WHO_covid": {

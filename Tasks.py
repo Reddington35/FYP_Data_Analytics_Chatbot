@@ -195,12 +195,12 @@ def change_Datasets(dataset):
 def decision_handler(question,username):
     print(question)
     summary = input(username)
-    while summary != "yes" and summary != 'y' \
-            and summary != "no" and summary != 'n':
+    while summary.lower() != "yes" and summary.lower() != 'y' \
+            and summary.lower() != "no" and summary.lower() != 'n':
         print("Colin: could you please enter yes or no as your response")
         print(question.lower())
         summary = input(username)
-    if summary == "yes" or summary == 'y':
+    if summary.lower() == "yes" or summary.lower() == 'y':
         print("Colin: Thank You " + username.replace(':','').strip())
         return True
     else:
