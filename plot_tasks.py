@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import Tasks
 
@@ -97,11 +98,15 @@ def dynamic_line_chart(dataset,x_input,y_input,username):
           print("Colin: Please enter y feature please")
           y_input = input(username)
      if x_input and y_input in df.head(0):
+          #labels = df[x_input]
           plt.figure(fig)
           plt.plot(df[x_input], df[y_input])
           plt.title(title)
           plt.xlabel(x_input)
           plt.ylabel(y_input)
+          # plt.tick_params(axis='both', labelsize=7)
+          # plt.xticks(df[x_input],labels,rotation=90)
+          # plt.margins(0.2)
           plt.show()
      # Allow user to refine chart
      refine = True

@@ -41,7 +41,8 @@ def chatbot():
             print("Previous Conversation with User " + username.replace(':','').strip()
                   + "\n****************************" )
             deserialise_user(username)
-    print("Colin: " + "So " + username.replace(':','').strip() + " Which dataset will we be working with today?")
+    print("Colin: " + "So " + username.replace(':','').strip() + " Which dataset will we be working with today?\n"
+          "- covid_Eu.csv\n- covid_Ireland.csv\n- covid_World.csv\n- WHO_covid.csv")
 
     # statement takes in the user input in lowercase
     statement = input(username)
@@ -62,7 +63,7 @@ def chatbot():
         request = check_command(task, queryTexts["Approach"],username)
 
         if request == "Done":
-            print("Colin: signing you out now " + username.replace(':',''))
+            print("Colin: No Problem " + username.replace(':',''))
         else:
             if request["Categorization"] == "Change_Dataset":
                 dataset = Tasks.load_dataset(task, queryTexts, username)
@@ -94,12 +95,14 @@ def check_command(command, dataset,username):
         if Tasks.decision_handler("Colin: Do you wish to quit chatting " + username.replace(":","").strip(),username):
             global done
             done = True
-            return "Done"
+        else:
+            done = False
+        return "Done"
     return NLP.phrase_match(command, dataset)
 
 def customer_feedback(username):
     user_complete = Tasks.decision_handler("Colin: Before I complete signing you out of the chat,"
-                           " Would you mind completing some short feedback questions"
+                           " Would you please complete some short feedback questions"
                            " on your user experience " + username.replace(":","").strip() + "?",username)
     if not user_complete:
         print("Colin: Thank You " + username.replace(':','').strip() + " and have a good day")
@@ -142,20 +145,18 @@ def add_user(username):
     return users
 
 def print_and_log(message):
-    start_time = datetime.now()
+    timestamp = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
     if len(message > 0):
-        conversation.append(message)
-    end_date = datetime.now()
+        conversation.append(timestamp + " " + message)
     print(message)
 
 def input_and_log(message,username):
-    start_date = datetime.now()
+    timestamp = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
     if len(message > 0):
         conversation.append(message)
     user_input = input(username)
     if len(user_input > 0):
-        conversation.append(user_input)
-    end_date = datetime.now()
+        conversation.append(timestamp + " " + user_input)
     return user_input
 
 # Function call for chatbot

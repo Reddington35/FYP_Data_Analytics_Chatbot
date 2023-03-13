@@ -1,6 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import f1_score
 from sklearn.naive_bayes import GaussianNB
 from sklearn.svm import SVR
 from sklearn.model_selection import train_test_split, GridSearchCV
@@ -106,7 +107,7 @@ def RandomForest(target, labels, dataset,username):
     user_ccp_alpha = 0.0
     user_max_samples = None
 
-    X_train, X_test, y_train, y_test = train_test_split(scaled_X, y, test_size=0.3)
+    X_train, X_test, y_train, y_test = train_test_split(scaled_X, y, test_size=0.3,random_state=1)
     while refinement:
         clf = RandomForestClassifier(n_estimators=user_n_estimators,max_depth=user_max_depth,criterion=user_criterion,
                                      min_samples_split=user_min_samples_split,min_samples_leaf=user_min_samples_leaf,
@@ -119,12 +120,13 @@ def RandomForest(target, labels, dataset,username):
         clf.fit(X_train, y_train)
         print("predicting dataset")
         y_pred = clf.predict(X_test)
+        print("f1 score = ",f1_score(y_test, y_pred, average=None))
         print("Accuracy:", metrics.accuracy_score(y_test, y_pred))
-        print("Recall:", metrics.recall_score(y_test, y_pred, average='micro'))
+        print("Recall:", metrics.recall_score(y_test, y_pred,average='micro'))
         plt.figure("Training Data")
         plt.scatter(y_test,y_pred)
         plt.title("nothing")
-        plt.xlabel("Test Data")
+        plt.xlabel("nothing")
         plt.ylabel("Predicted Data")
         plt.show()
 
@@ -287,6 +289,7 @@ def feature_selection(dataset):
         if i % 7 == 6:
             labelView += " |\n"
         labelView += " | " + labels[i]
+    print("Dataset: " + dataset['Title'] + "\n")
     print("Available Features: \n")
     labelView += " |\n"
     print(labelView)
@@ -309,12 +312,21 @@ def load_dataset(statement,queryTexts,username):
         # if yes chatbot will move to the next query otherwise it will ask the user
         # for further clarification
         contentAnswer = decision_handler("Colin: Are you happy with these details y/n",username)
-        if contentAnswer:
-            content = True
-        else:
-            print("Colin: Please rephrase and I will do my best to understand your choice")
+        while not contentAnswer:
+            print("Colin: " + "No problem " + username.replace(':','').strip() + " Which dataset would you like to use?,\n"
+                  "- covid_Eu.csv\n- covid_Ireland.csv\n- covid_World.csv\n- WHO_covid.csv")
             statement = input(username)
-            content = False
+            # locates the dataset if user input matches the available dataset
+            dataset = NLP.phrase_match(statement, queryTexts["Datasets"])
+            # Get target classification section
+            print("Selection")
+            print("-------------")
+            print("Dataset: " + dataset['Title'])
+            print("Location: " + dataset['Location'])
+
+            responce = decision_handler("Colin: Are you happy with these details y/n",username)
+            if responce:
+                contentAnswer = True
         return dataset
 
 def change_Datasets(dataset):
@@ -397,3 +409,4 @@ def helper():
           "for example type: n_estimators=10"
           ", as the command to change this hyper-parameters\n- max_depth takes an int value for example  type: criterion=gini"
           ", as the command to change this hyper-parameters\n")
+

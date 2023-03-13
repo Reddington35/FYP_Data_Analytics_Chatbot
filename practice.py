@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import spacy as sp
 from spacy.matcher import PhraseMatcher
 import sklearn
@@ -5,7 +7,9 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn import metrics
 from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import LabelEncoder
 import pandas as pd
+import numpy as np
 
 nlp = sp.load("en_core_web_lg")
 
@@ -79,4 +83,24 @@ def RandomForest(target, labels, dataset):
     y_pred = clf.predict(X_test)
     print("Accuracy:", metrics.accuracy_score(y_test, y_pred))
 
-RandomForest("Cases - cumulative total","Deaths - newly reported in last 24 hours","datasets/WHO_covid.csv")
+#RandomForest("Cases - cumulative total","Deaths - newly reported in last 24 hours","datasets/WHO_covid.csv")
+
+def encoding(dataset):
+    df = pd.read_csv(dataset, index_col=False)
+    print(df['weekly_hosp_admissions'])
+    feat = df.head(0).applymap(str)
+    new_features = feat.columns.values
+    world = pd.DataFrame(new_features,columns=['new_features'])
+
+    print(df['location'].dtype)
+    label_encoder = LabelEncoder()
+    world['new_features_Cat'] = label_encoder.fit_transform(world['new_features'])
+    print(world['new_features_Cat'])
+
+#encoding("datasets/covid_World.csv")
+
+
+timestamp = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+print(timestamp)
+
+
