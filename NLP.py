@@ -7,7 +7,7 @@ import plot_tasks
 sp.prefer_gpu()
 nlp = sp.load("en_core_web_lg")
 
-def phrase_match(user_input, dataset):
+def phrase_match(user_input, dataset,username):
     matcher = PhraseMatcher(nlp.vocab)
     while True:
         for key in dataset:
@@ -21,11 +21,12 @@ def phrase_match(user_input, dataset):
 
         if len(matched) > 0:
             break;
-        user_input = input("colin: Sorry I did not quiet catch that, could you rephrase please\nResponse: ")
+        print("colin: Sorry I did not quiet catch that, could you rephrase please " + username.replace(':','').strip())
+        user_input = input(username)
         print("Colin: Thank you for clearing that up")
     return dataset[matched[0]]
 
-def label_match(user_input, dataset):
+def label_match(user_input, dataset,username):
     matcher = PhraseMatcher(nlp.vocab)
     while True:
         for label in dataset:
@@ -36,8 +37,8 @@ def label_match(user_input, dataset):
         matched = [nlp.vocab.strings[s[0]] for s in matches]
         if len(matched) > 0:
             break;
-        user_input = input("colin: Cannot find feature could you please type exact spelling for given feature"
-                           "\nResponse: ")
+        print("colin: Cannot find feature could you please type exact spelling for given feature\n")
+        user_input = input(username)
         print("Colin: Thank you for clearing that up")
     return matched
 

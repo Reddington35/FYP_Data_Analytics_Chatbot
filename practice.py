@@ -97,10 +97,10 @@ def encoding(dataset):
     world['new_features_Cat'] = label_encoder.fit_transform(world['new_features'])
     print(world['new_features_Cat'])
 
-#encoding("datasets/covid_World.csv")
+encoding("datasets/covid_World.csv")
 
 
-timestamp = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
-print(timestamp)
+# timestamp = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+# print(timestamp)
 
 

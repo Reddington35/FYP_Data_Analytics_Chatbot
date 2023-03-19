@@ -32,8 +32,16 @@
       "Patterns": ["World covid-19 vaccination covid world global","world dataset","World Dataset","global dataset",
         "Global Dataset","global","World","world","WORLD","WORLD DATASET"],
       "Location": "datasets/covid_World.csv"
+    },
+    "Irish_World": {
+    "Title": "Custom Dataset",
+      "SupportText": "Custom Dataset",
+      "PatternTitle": "Custom",
+      "Patterns": ["Custom Dataset","custom dataset",
+        "CUSTOM DATASET","Custom","custom","CUSTOM"],
+      "Location": "datasets/Custom.csv"
     }
-  },
+},
   "Approach": {
     "NaiveBayes": {
       "Title": "Naive Bayes",
@@ -43,22 +51,23 @@
       "Categorization": "Train",
       "def": "NaiveBayes"
     },
-    "RandomForrest": {
-      "Title": "Random Forest",
-      "SupportText": "Random Forrest trees forest ",
-      "PatternTitle": "Random_Forest",
-      "Patterns": ["Random_Forest" ,"random forest","RANDOM FOREST","random","forrest","Random","Forest","rand"],
+    "RandomForrestClassification": {
+      "Title": "Random Forest Classifier",
+      "SupportText": "Random Forrest Classifier ",
+      "PatternTitle": "Random_Forest_Classifier",
+      "Patterns": ["Random_Forest_Classifier" ,"random forest classifier","RANDOM FOREST CLASSIFIER","random forest classification",
+      "Random Forest Classification","RANDOM FOREST CLASSIFICATION"],
       "Categorization": "Train",
-      "def": "RandomForest"
+      "def": "RandomForestClassification"
     },
-    "SupportVectorMachine": {
-      "Title": "Support Vector Machine SVM",
-      "SupportText": "Support Vector Machine SVM ",
-      "PatternTitle": "Support_Vecto_Machine",
-      "Patterns": ["Support Vector Machine","support vector machine","SVM","svm","Svm","support vector machine",
-      "SUPPORT VECTOR MACHINE","support","vector","machine"],
+    "RandomForestRegressor": {
+      "Title": "RandomForestRegressor",
+      "SupportText": "Random Forest Regressor",
+      "PatternTitle": "Random_Forest_Regressor",
+      "Patterns": ["Random Forest Regressor","random forest regressor","RANDOM FOREST REGRESSOR","Random Forest Regression",
+      "random forest regression","RANDOM FOREST REGRESSION"],
       "Categorization": "Train",
-      "def": "SupportVectorMachine"
+      "def": "RandomForestRegression"
     },
 
     "ScatterPlot": {

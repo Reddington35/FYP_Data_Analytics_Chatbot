@@ -30,6 +30,13 @@ nlp = sp.load("en_core_web_lg")
 # and location of the requested Dataset from the json file named interpretation.json
 # and operate the chatbot with the functions written to improve its mechanics
 def chatbot():
+    print("**************************************************\n"
+          "********   ********    *         **   ** *       *\n"
+          "*         **      **   *         **   **   *     *\n"
+          "*         **      **   *         **   **     *   *\n"
+          "*         **      **   *         **   **       * *\n"
+          "********   ********    ********  **   **         *\n"
+          "**************************************************\n")
     print("Colin: Hi my name is Colin, your Covid-19 chatbot, who am i talking to?")
     login = input("User:")
     username = user_login(login)
@@ -42,7 +49,7 @@ def chatbot():
                   + "\n****************************" )
             deserialise_user(username)
     print("Colin: " + "So " + username.replace(':','').strip() + " Which dataset will we be working with today?\n"
-          "- covid_Eu.csv\n- covid_Ireland.csv\n- covid_World.csv\n- WHO_covid.csv")
+          "- covid_Eu.csv\n- covid_Ireland.csv\n- covid_World.csv\n- WHO_covid.csv\n- Custom Dataset")
 
     # statement takes in the user input in lowercase
     statement = input(username)
@@ -98,7 +105,7 @@ def check_command(command, dataset,username):
         else:
             done = False
         return "Done"
-    return NLP.phrase_match(command, dataset)
+    return NLP.phrase_match(command, dataset,username)
 
 def customer_feedback(username):
     user_complete = Tasks.decision_handler("Colin: Before I complete signing you out of the chat,"
@@ -144,19 +151,25 @@ def add_user(username):
     users.append(username)
     return users
 
-def print_and_log(message):
+def print_and_log(message,username):
     timestamp = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
     if len(message > 0):
         conversation.append(timestamp + " " + message)
-    print(message)
+    with open('Users/'+ username.replace(':','').strip() + + timestamp +'.pkl', 'wb') as f:
+        pickle.dump(conversation, f)
+    print(conversation)
 
 def input_and_log(message,username):
     timestamp = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
-    if len(message > 0):
+    if len(message) > 0:
         conversation.append(message)
     user_input = input(username)
-    if len(user_input > 0):
+    if len(user_input) > 0:
         conversation.append(timestamp + " " + user_input)
+    with open('Users/'+ username.replace(':','').strip() + " " + timestamp +'.pkl', 'wb') as f:
+        save = pickle.load(f)
+        save = save + conversation
+        pickle.dump(save, f)
     return user_input
 
 # Function call for chatbot
