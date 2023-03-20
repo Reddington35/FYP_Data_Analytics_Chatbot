@@ -1,3 +1,4 @@
+import os
 from os.path import isfile
 from datetime import datetime
 import spacy as sp
@@ -6,6 +7,7 @@ import Tasks
 import NLP
 import plot_tasks
 import pickle
+import glob
 
 # Global list to be used with record feedback
 user_details = []
@@ -37,43 +39,51 @@ def chatbot():
           "*         **      **   *         **   **       * *\n"
           "********   ********    ********  **   **         *\n"
           "**************************************************\n")
-    print("Colin: Hi my name is Colin, your Covid-19 chatbot, who am i talking to?")
-    login = input("User:")
+    Tasks.print_and_log("Colin: Hi my name is Colin, your Covid-19 chatbot, who am i talking to?",conversation)
+    login = Tasks.input_and_log("User:",conversation)
     username = user_login(login)
-    path = "Users/" + username.replace(':','').strip() + ".pkl"
-    if isfile(path):
-        preferences = Tasks.decision_handler("Colin: Hello again " + username.replace(':','').strip() +
-                                            " Would you like to see a transcript of our previous conversation?",username)
+    path = '/Users/jamesreddington/PycharmProjects/fyp_chatbot_colin/Users/'
+    files = [filename for filename in os.listdir(path) if filename.startswith(username.replace(':','').strip())]
+    if len(files) > 0:
+        preferences = Tasks.decision_handler("Colin: Hello again " + username.replace(':', '').strip() +
+                                             " Would you like to see a transcript of our last conversation?",username)
         if preferences:
-            print("Previous Conversation with User " + username.replace(':','').strip()
-                  + "\n****************************" )
-            deserialise_user(username)
-    print("Colin: " + "So " + username.replace(':','').strip() + " Which dataset will we be working with today?\n"
-          "- covid_Eu.csv\n- covid_Ireland.csv\n- covid_World.csv\n- WHO_covid.csv\n- Custom Dataset")
+            print("Previous Conversation with User " + username.replace(':', '').strip()
+                  + "\n****************************")
+            #print(latest_file)
+            folder_path = r'/Users/jamesreddington/PycharmProjects/fyp_chatbot_colin/Users/'
+            file_type = r'/*pkl'
+            filing = glob.glob(folder_path + file_type)
+            max_file = max(filing, key=os.path.getctime)
+            deserialise_user(max_file)
+
+    Tasks.print_and_log("Colin: " + "So " + username.replace(':','').strip() + " Which dataset will we be working with today?\n"
+          "- covid_Eu.csv\n- covid_Ireland.csv\n- covid_World.csv\n- WHO_covid.csv\n- Custom Dataset",conversation)
 
     # statement takes in the user input in lowercase
-    statement = input(username)
+    statement = Tasks.input_and_log(username,conversation)
     statement = statement.lower()
-    dataset = Tasks.load_dataset(statement,queryTexts,username)
+    dataset = Tasks.load_dataset(statement,queryTexts,username,conversation)
 
     # Get Dataset
     # Basic Instructions on the services available by the chatbot
-    print("Colin: I am a covid-19 chatbot, however I can only provide "
+    Tasks.print_and_log("Colin: I am a covid-19 chatbot, however I can only provide "
               "help on topics such as:\n - Data summary of the Dataset\n - Graph the Dataset\n - Build a ml model of the"
-              " dataset using (Random Forrest, Naive Bayes or SVM)\n - Display the available Features")
+              " dataset using (Random Forrest Classification, Naive Bayes or Random Forest Regression"
+              "\n - Display the available Features",conversation)
     # While loop that checks to see if the user wants to quit the application
     # or choose from four distinct services available
     while not done:
-        print("Colin: which task would you like me to perform?")
-        task = input(username)
+        Tasks.print_and_log("Colin: which task would you like me to perform?",conversation)
+        task = Tasks.input_and_log(username,conversation)
         # Are we changing Dataset or running Approach?
         request = check_command(task, queryTexts["Approach"],username)
 
         if request == "Done":
-            print("Colin: No Problem " + username.replace(':',''))
+            Tasks.print_and_log("Colin: No Problem " + username.replace(':',''),conversation)
         else:
             if request["Categorization"] == "Change_Dataset":
-                dataset = Tasks.load_dataset(task, queryTexts, username)
+                dataset = Tasks.load_dataset(task, queryTexts, username,conversation)
 
             elif request["Categorization"] == "Plot":
                 #Tasks.data_plot(dataset,task, request)
@@ -88,14 +98,19 @@ def chatbot():
                     plot_tasks.dynamic_histogram(dataset,task,username)
 
             elif request["Categorization"] == "Train":
-                Tasks.data_ml(dataset, username, request)
+                Tasks.data_ml(dataset, username, request,conversation)
 
             elif request["Categorization"] == "Display":
-                Tasks.data_summary(dataset)
+                Tasks.data_summary(dataset,conversation)
 
             elif request["Categorization"] == "Features":
                 Tasks.feature_selection(dataset)
     customer_feedback(username)
+    # save conversation to pickle file
+    timestamp = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+    conversation.append(timestamp + "\nend of conversation\n")
+    with open(path + username.replace(':','').strip() + timestamp + ".pkl", 'wb') as f:
+        pickle.dump(conversation, f)
 
 def check_command(command, dataset,username):
     if "quit" in command.lower() or "exit" in command.lower():
@@ -112,34 +127,25 @@ def customer_feedback(username):
                            " Would you please complete some short feedback questions"
                            " on your user experience " + username.replace(":","").strip() + "?",username)
     if not user_complete:
-        print("Colin: Thank You " + username.replace(':','').strip() + " and have a good day")
+        Tasks.print_and_log("Colin: Thank You " + username.replace(':','').strip() + " and have a good day",conversation)
     if user_complete:
-        print("Colin: Excellent")
-        print("Welcome to customer feedback\n*****************************")
-        record_chat("Colin: Did you have any trouble with the Machine Learning feature of this application,"
-                    "if so which feature did you have trouble using?",username)
-        record_chat("Colin: Did you have any trouble with the Dynamic Graphing feature of this application,"
-                    "if so which feature did you have trouble using?",username)
-        record_chat("Colin: Did you find me efficient,in how I performed the tasks asked of me, if not where "
-                    "in your opinion could I improve?",username)
-        print("Colin: Thank You " + username.replace(':','').strip() + " and have a good day")
+        Tasks.print_and_log("Welcome to customer feedback\n*****************************",conversation)
+        Tasks.print_and_log("Colin: Did you have any trouble with the Machine Learning feature of this application,"
+                    "if so which feature did you have trouble using?",conversation)
+        Tasks.input_and_log(username,conversation)
+        Tasks.print_and_log("Colin: Did you have any trouble with the Dynamic Graphing feature of this application,"
+                    "if so which feature did you have trouble using?",conversation)
+        Tasks.input_and_log(username,conversation)
+        Tasks.print_and_log("Colin: Did you find me efficient,in how I performed the tasks asked of me, if not where "
+                    "in your opinion could I improve?",conversation)
+        Tasks.input_and_log(username,conversation)
+        Tasks.print_and_log("Colin: Thank You " + username.replace(':','').strip() + " and have a good day",conversation)
 
-def record_chat(colin, username):
-    print(colin)
-    user = input(username)
-    add_user(username)
-    user_details.append(colin)
-    user_details.append(username + user)
-    with open('Users/'+ username.replace(':','').strip() +'.pkl', 'wb') as f:
-        pickle.dump(user_details, f)
-
-def deserialise_user(username):
-    with open('Users/'+ username.replace(':','').strip() +'.pkl', 'rb') as f:
-        users = add_user(username)
-        if username in users:
-            print_feedback_chat = pickle.load(f)
-            for p in print_feedback_chat:
-                print(p)
+def deserialise_user(path):
+    with open(path, 'rb') as f:
+        print_chat = pickle.load(f)
+        for p in print_chat:
+            print(p)
 
 # method for identifying user login details
 def user_login(login):
@@ -150,27 +156,6 @@ def add_user(username):
     users = []
     users.append(username)
     return users
-
-def print_and_log(message,username):
-    timestamp = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
-    if len(message > 0):
-        conversation.append(timestamp + " " + message)
-    with open('Users/'+ username.replace(':','').strip() + + timestamp +'.pkl', 'wb') as f:
-        pickle.dump(conversation, f)
-    print(conversation)
-
-def input_and_log(message,username):
-    timestamp = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
-    if len(message) > 0:
-        conversation.append(message)
-    user_input = input(username)
-    if len(user_input) > 0:
-        conversation.append(timestamp + " " + user_input)
-    with open('Users/'+ username.replace(':','').strip() + " " + timestamp +'.pkl', 'wb') as f:
-        save = pickle.load(f)
-        save = save + conversation
-        pickle.dump(save, f)
-    return user_input
 
 # Function call for chatbot
 chatbot()
