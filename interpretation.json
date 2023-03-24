@@ -40,6 +40,14 @@
       "Patterns": ["Custom Dataset","custom dataset",
         "CUSTOM DATASET","Custom","custom","CUSTOM"],
       "Location": "datasets/Custom.csv"
+    },
+    "Test_Dataset": {
+    "Title": "Drug Prediction",
+      "SupportText": "Drug Dataset",
+      "PatternTitle": "Drug Prediction",
+      "Patterns": ["Drug Prediction","drug prediction",
+        "DRUG PREDICTION","drug prediction dataset","DRUG PREDICTION DATASET","Drug Prediction Dataset"],
+      "Location": "datasets/drug_prediction.csv"
     }
 },
   "Approach": {

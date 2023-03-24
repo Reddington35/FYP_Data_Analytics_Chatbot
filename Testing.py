@@ -8,6 +8,8 @@ from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn import metrics
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import LabelEncoder
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import StandardScaler,OneHotEncoder
 import pandas as pd
 import numpy as np
 
@@ -85,19 +87,36 @@ def RandomForest(target, labels, dataset):
 
 #RandomForest("Cases - cumulative total","Deaths - newly reported in last 24 hours","datasets/WHO_covid.csv")
 
-def encoding(dataset):
-    df = pd.read_csv(dataset, index_col=False)
-    print(df['weekly_hosp_admissions'])
-    feat = df.head(0).applymap(str)
-    new_features = feat.columns.values
-    world = pd.DataFrame(new_features,columns=['new_features'])
+# def encoding(dataset):
+#     df = pd.read_csv(dataset, index_col=False)
+#     print(df['weekly_hosp_admissions'])
+#     feat = df.head(0).applymap(str)
+#     new_features = feat.columns.values
+#     world = pd.DataFrame(new_features,columns=['new_features'])
+#
+#     print(df['location'].dtype)
+#     label_encoder = LabelEncoder()
+#     world['new_features_Cat'] = label_encoder.fit_transform(world['new_features'])
+#     print(world['new_features_Cat'])
+#
+# encoding("datasets/covid_World.csv")
 
-    print(df['location'].dtype)
-    label_encoder = LabelEncoder()
-    world['new_features_Cat'] = label_encoder.fit_transform(world['new_features'])
-    print(world['new_features_Cat'])
+def encoding(X):
+    float_columns = list(X.select_dtypes('float64').columns)
+    categorical_columns = list(X.select_dtypes('int64').columns)
 
-encoding("datasets/covid_World.csv")
+    pipeline = ColumnTransformer([
+        ('num', StandardScaler(), float_columns),
+        ('cat', OneHotEncoder(), categorical_columns),
+    ])
+
+    encoded_X = pipeline.fit_transform(X)
+    return encoded_X
+#
+# df.head()
+# df = encoding(df)
+# df.head()no
+
 
 
 # timestamp = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")

@@ -1,5 +1,5 @@
 import os
-from os.path import isfile
+from os.path import isfile, join
 from datetime import datetime
 import spacy as sp
 import json
@@ -41,7 +41,7 @@ def chatbot():
           "**************************************************\n")
     Tasks.print_and_log("Colin: Hi my name is Colin, your Covid-19 chatbot, who am i talking to?",conversation)
     login = Tasks.input_and_log("User:",conversation)
-    username = user_login(login)
+    username = user_login(login[:20])
     path = '/Users/jamesreddington/PycharmProjects/fyp_chatbot_colin/Users/'
     files = [filename for filename in os.listdir(path) if filename.startswith(username.replace(':','').strip())]
     if len(files) > 0:
@@ -50,15 +50,16 @@ def chatbot():
         if preferences:
             print("Previous Conversation with User " + username.replace(':', '').strip()
                   + "\n****************************")
-            #print(latest_file)
-            folder_path = r'/Users/jamesreddington/PycharmProjects/fyp_chatbot_colin/Users/'
-            file_type = r'/*pkl'
-            filing = glob.glob(folder_path + file_type)
-            max_file = max(filing, key=os.path.getctime)
-            deserialise_user(max_file)
+            valid_file = str(username.replace(':','').strip())
+            directory_path = r'/Users/jamesreddington/PycharmProjects/fyp_chatbot_colin/Users/'
+            file_type = r'/*' + valid_file + '*pkl'
+            filing = glob.glob(directory_path + file_type)
+            sorted_file = max(filing, key=os.path.getctime)
+            deserialise_user(sorted_file)
 
     Tasks.print_and_log("Colin: " + "So " + username.replace(':','').strip() + " Which dataset will we be working with today?\n"
-          "- covid_Eu.csv\n- covid_Ireland.csv\n- covid_World.csv\n- WHO_covid.csv\n- Custom Dataset",conversation)
+          "- covid_Eu.csv\n- covid_Ireland.csv\n- covid_World.csv\n- WHO_covid.csv\n- Custom.csv\n"
+                                                                               "- drug_prediction",conversation)
 
     # statement takes in the user input in lowercase
     statement = Tasks.input_and_log(username,conversation)
@@ -86,9 +87,7 @@ def chatbot():
                 dataset = Tasks.load_dataset(task, queryTexts, username,conversation)
 
             elif request["Categorization"] == "Plot":
-                #Tasks.data_plot(dataset,task, request)
                 if request["Title"] == "Line Chart":
-                    #NLP.world_dataset_region(dataset, username)
                     plot_tasks.dynamic_line_chart(dataset,task,task,username)
                 elif request["Title"] == "Bar Chart":
                     plot_tasks.dynamic_bar_chart(dataset,task,task,username)
@@ -98,7 +97,7 @@ def chatbot():
                     plot_tasks.dynamic_histogram(dataset,task,username)
 
             elif request["Categorization"] == "Train":
-                Tasks.data_ml(dataset, username, request,conversation)
+                Tasks.data_ml(dataset, username, request)
 
             elif request["Categorization"] == "Display":
                 Tasks.data_summary(dataset,conversation)
@@ -149,7 +148,7 @@ def deserialise_user(path):
 
 # method for identifying user login details
 def user_login(login):
-    login = login + " : "
+    login = login + ":"
     return login
 
 def add_user(username):

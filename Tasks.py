@@ -1,20 +1,20 @@
-import math
 from datetime import datetime
 import pandas as pd
 from time import process_time_ns
 from scipy.stats import linregress
 import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
-from sklearn.metrics import f1_score, confusion_matrix, classification_report, roc_curve, roc_auc_score, \
-    precision_recall_curve, auc
 from sklearn.naive_bayes import GaussianNB
 from sklearn.model_selection import train_test_split, GridSearchCV
-from sklearn.preprocessing import StandardScaler
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import StandardScaler,OneHotEncoder,OrdinalEncoder
 from sklearn.model_selection import KFold
 from sklearn import metrics
 import numpy as np
 import NLP
 import warnings
+
+import Testing
 
 warnings.filterwarnings('ignore')
 
@@ -37,19 +37,19 @@ def data_summary(dataset,conversation):
 def data_plot(dataset, username, request):
     df = pd.read_csv(dataset,index_col=False)
 
-def data_ml(dataset, username, request,conversation):
+def data_ml(dataset, username, request):
     df = pd.read_csv(dataset['Location'],index_col=False)
-    labels = printChoices(df,conversation)
+    labels = printChoices(df)
 
-    print_and_log("Colin: Give target feature please " + username,conversation)
-    choice = input_and_log(username,conversation)
-    print_and_log(choice,conversation)
+    print("Colin: Give target feature please " + username)
+    choice = input(username)
+    #print(choice)
     # make sure we get a non-empty list from label match
 
     target = NLP.label_match(choice, labels,username)[0]
-    labels = printChoices(df,conversation)
-    print_and_log("Colin: Give parameters please " + username,conversation)
-    choice = input_and_log(username,conversation)
+    labels = printChoices(df)
+    print("Colin: Give parameters please " + username)
+    choice = input(username)
     # print("Colin: Give Hyper - Parameters please " + username)
     # hp_choice = input(username)
     params = NLP.label_match(choice, labels,username)
@@ -58,10 +58,10 @@ def data_ml(dataset, username, request,conversation):
     for label in params:
         labels.append(label)
 
-    globals()[request['def']](target, labels, df, username,conversation)
+    globals()[request['def']](target, labels, df, username)
 
 # ML Methods
-def RandomForestClassification(target, labels, dataset,username,conversation):
+def RandomForestClassification(target, labels, dataset,username):
     try:
         refinement = True
         #print(dataset)
@@ -81,9 +81,10 @@ def RandomForestClassification(target, labels, dataset,username,conversation):
         #print(y)
 
         # use StandardScaler to normalise and scale the data
-        scaler = StandardScaler()
-        scaled_X = scaler.fit_transform(X)
-        #print(scaled_X)
+        # scaler = StandardScaler()
+        # scaled_X = scaler.fit_transform(X)
+        # #print(scaled_X)
+        encoded_X = encoding(X)
 
         crit_list = ["gini","entropy"]
         cl_weight = ["balanced","balanced_subsample"]
@@ -109,7 +110,7 @@ def RandomForestClassification(target, labels, dataset,username,conversation):
         user_ccp_alpha = 0.0
         user_max_samples = None
 
-        X_train, X_test, y_train, y_test = train_test_split(scaled_X, y, test_size=0.3)
+        X_train, X_test, y_train, y_test = train_test_split(encoded_X,y, test_size=0.2)
         while refinement:
             start_time = process_time_ns()
             clf = RandomForestClassifier(n_estimators=user_n_estimators,max_depth=user_max_depth,criterion=user_criterion,
@@ -119,12 +120,12 @@ def RandomForestClassification(target, labels, dataset,username,conversation):
                                          bootstrap=user_bootstrap,oob_score=user_oob_score,n_jobs=user_n_jobs,
                                          random_state=user_random_state,verbose=user_verbose,warm_start=user_warm_start,
                                          class_weight=user_class_weight,ccp_alpha=user_ccp_alpha,max_samples=user_max_samples)
-            print_and_log("Colin: Fitting dataset using Random Forest Classifier",conversation)
+            print("Colin: Fitting dataset using Random Forest Classifier")
             clf.fit(X_train, y_train)
-            print_and_log("Colin: predicting dataset using Random Forest Classifier",conversation)
+            print("Colin: predicting dataset using Random Forest Classifier")
             y_pred = clf.predict(X_test)
             #res = metrics.confusion_matrix(y_test, y_pred)
-            print_and_log("Colin: Confusion Matrix:\n" + str(metrics.confusion_matrix(y_test, y_pred)),conversation)
+            print("Colin: Confusion Matrix:\n",metrics.confusion_matrix(y_test, y_pred))
             #pd.crosstab(y_test,y_pred,rownames=['Actual'],colnames=['Predicted'], margins =True)
             #print("Classification report:\n", classification_report(y_test,y_pred))
             #y_pred_proba = clf.predict_proba(X_test)[:, 1]
@@ -136,16 +137,13 @@ def RandomForestClassification(target, labels, dataset,username,conversation):
             # # Area under curve
             # auc_pred = auc(recall, precision)
             # print(auc_pred)
-            print_and_log("Colin: f1 score: " + str(metrics.f1_score(y_test, y_test, average='micro',labels=np.unique(y_pred)))
-                        ,conversation)
-            print_and_log("Colin: Precision: " + str(metrics.precision_score(y_test, y_pred, average='weighted',
-                                                               labels=np.unique(y_pred))),conversation)
-            print_and_log("Colin: Accuracy: " + str(metrics.accuracy_score(y_test, y_pred)),conversation)
-            print_and_log("Colin: Recall: " + str(metrics.recall_score(y_test, y_pred,average='weighted',
-                                                                      labels=np.unique(y_pred))),conversation)
+            print("Colin: f1 score: ", metrics.f1_score(y_test,y_pred, average='weighted'))
+            print("Colin: Precision: ", metrics.precision_score(y_test, y_pred,average='weighted'))
+            print("Colin: Accuracy: ",metrics.accuracy_score(y_test, y_pred))
+            print("Colin: Recall: ",metrics.recall_score(y_test, y_pred,average='micro'))
             end_time = process_time_ns()
             train_time = (end_time - start_time) * 0.000000001
-            print_and_log("Colin: Training Time in seconds = " + str(train_time),conversation)
+            print("Colin: Training Time in seconds = ",train_time)
             plt.figure("Machine Learning Data")
             plt.scatter(y_test,y_pred)
             slope, intercept, r_value, p_value, std_err = linregress(y_test,y_pred)
@@ -155,72 +153,67 @@ def RandomForestClassification(target, labels, dataset,username,conversation):
             plt.ylabel("Predicted Data",color='green')
             plt.show()
 
-            refine_command = input_and_log("Colin: Would you like to refine hyper-parameters ?" +"\n" + username,
-                                           conversation)
+            refine_command = input("Colin: Would you like to refine hyper-parameters ?" +"\n" + username)
             if refine_command.lower().strip() in ['quit', 'no', 'n']:
                 refinement = False
             else:
                 redifined_list = refine_command.split(",")
                 for redifined in redifined_list:
                     if "n_estimators" in redifined:
-                        user_n_estimators = change_hyperperams_int("n_estimators=", redifined,user_n_estimators,conversation)
+                        user_n_estimators = change_hyperperams_int("n_estimators=", redifined,user_n_estimators)
                     elif "max_depth" in redifined:
-                        user_max_depth = change_hyperperams_int("max_depth=", redifined,user_max_depth,conversation)
+                        user_max_depth = change_hyperperams_int("max_depth=", redifined,user_max_depth)
                     elif "criterion" in redifined:
                         for crit in crit_list:
                             if crit in redifined:
                                 user_criterion = change_hyperperams_String("criterion=",
-                                                                           redifined,user_criterion,conversation)
+                                                                           redifined,user_criterion)
                     elif "min_samples_split" in redifined:
                         user_min_samples_split = change_hyperperams_int("min_samples_split=",
-                                                                        redifined,user_min_samples_split,conversation)
+                                                                        redifined,user_min_samples_split)
                     elif "min_samples_leaf" in redifined:
                         user_min_samples_leaf = change_hyperperams_int("min_samples_leaf=",
-                                                                       redifined,user_min_samples_leaf,conversation)
+                                                                       redifined,user_min_samples_leaf)
                     elif "min_weight_fraction_leaf" in redifined:
                         user_min_weight_fraction_leaf = change_hyperperams_Float("min_weight_fraction_leaf=",redifined,
-                                                                                 user_min_weight_fraction_leaf,conversation)
+                                                                                 user_min_weight_fraction_leaf)
                     elif "max_features" in redifined:
                         for mxf in mx_features:
                             if mxf in redifined:
                                 user_max_features = change_hyperperams_String("max_features=",redifined,
-                                                                              user_max_features,conversation)
+                                                                              user_max_features)
                     elif "max_leaf_nodes" in redifined:
                         user_max_leaf_nodes = change_hyperperams_int("max_leaf_nodes=",
-                                                                     redifined,user_max_leaf_nodes,conversation)
+                                                                     redifined,user_max_leaf_nodes)
                     elif "min_impurity_decrease" in redifined:
                         user_min_impurity_decrease = change_hyperperams_Float("min_impurity_decrease=",redifined,
-                                                                              user_min_impurity_decrease,conversation)
+                                                                              user_min_impurity_decrease)
                     elif "bootstrap" in redifined:
-                        user_bootstrap = change_hyperperams_bool("bootstrap=",redifined,user_bootstrap,conversation)
+                        user_bootstrap = change_hyperperams_bool("bootstrap=",redifined,user_bootstrap)
                     elif "oob_score" in redifined:
-                        user_oob_score = change_hyperperams_bool("oob_score=",redifined,user_oob_score,conversation)
+                        user_oob_score = change_hyperperams_bool("oob_score=",redifined,user_oob_score)
                     elif "n_jobs" in redifined:
-                        user_n_jobs = change_hyperperams_int("n_jobs=",redifined,user_n_jobs,conversation)
+                        user_n_jobs = change_hyperperams_int("n_jobs=",redifined,user_n_jobs)
                     elif "random_state" in redifined:
-                        user_random_state = change_hyperperams_int("random_state=",redifined,
-                                                                   user_random_state,conversation)
+                        user_random_state = change_hyperperams_int("random_state=",redifined,user_random_state)
                     elif "verbose" in redifined:
-                        user_verbose = change_hyperperams_int("verbose=",redifined,user_verbose,conversation)
+                        user_verbose = change_hyperperams_int("verbose=",redifined,user_verbose)
                     elif "warm_start" in redifined:
-                        user_warm_start = change_hyperperams_bool("warm_start=",redifined,user_warm_start,conversation)
+                        user_warm_start = change_hyperperams_bool("warm_start=",redifined,user_warm_start)
                     elif "class_weight" in redifined:
                         for weight in cl_weight:
                             if weight in redifined:
-                                user_class_weight = change_hyperperams_String("class_weight=",
-                                                                              redifined,user_class_weight,conversation)
+                                user_class_weight = change_hyperperams_String("class_weight=", redifined,user_class_weight)
                     elif "ccp_alpha" in redifined:
-                        user_ccp_alpha = change_hyperperams_String("ccp_alpha=",redifined,user_ccp_alpha,conversation)
+                        user_ccp_alpha = change_hyperperams_String("ccp_alpha=",redifined,user_ccp_alpha)
                     elif "max_samples" in redifined:
-                        user_max_samples = change_hyperperams_Float("max_samples=",redifined,
-                                                                    user_max_samples,conversation)
+                        user_max_samples = change_hyperperams_Float("max_samples=",redifined, user_max_samples)
                     elif "help" in redifined:
-                        helper(conversation)
+                        helper()
     except ValueError:
-       print_and_log("Colin: oops there was an issue training these Features, sorry " + username.replace(':', '').strip()
-                     ,conversation)
+       print("Colin: oops there was an issue training these Features, sorry " + username.replace(':', '').strip())
 
-def NaiveBayes(target, labels, dataset,username,conversation):
+def NaiveBayes(target, labels, dataset,username):
     try:
         #print(dataset)
         newLabels = labels
@@ -239,27 +232,26 @@ def NaiveBayes(target, labels, dataset,username,conversation):
         #print(y)
 
         # use StandardScaler to normalise and scale the data
-        scaler = StandardScaler()
-        scaled_X = scaler.fit_transform(X)
+        # scaler = StandardScaler()
+        # scaled_X = scaler.fit_transform(X)
+        encoded_X = encoding(X)
         #print(scaled_X)
 
-        X_train, X_test, y_train, y_test = train_test_split(scaled_X, y, test_size=0.3)
+        X_train, X_test, y_train, y_test = train_test_split(encoded_X, y, test_size=0.2)
         start_time = process_time_ns()
         clf = GaussianNB()
-        print_and_log("Colin: Fitting dataset using Naive Bayes GaussianNB Classifier",conversation)
+        print("Colin: Fitting dataset using Naive Bayes")
         clf.fit(X_train, y_train)
-        print_and_log("Colin: predicting dataset using Naive Bayes GaussianNB Classifier",conversation)
+        print("Colin: predicting dataset using Naive Bayes")
         y_pred = clf.predict(X_test)
-        print_and_log("Colin: Confusion Matrix:\n" + str(metrics.confusion_matrix(y_test, y_pred)),conversation)
-        print_and_log("Colin: f1 score: ", + str(metrics.f1_score(y_test, y_pred, average='weighted',
-                                                                   labels=np.unique(y_pred))),conversation)
-        print_and_log("Colin: Precision: ", str(metrics.precision_score(y_test, y_pred, average='weighted',
-                                                                    labels=np.unique(y_pred))),conversation)
-        print_and_log("Colin: Accuracy: ", str(metrics.accuracy_score(y_test, y_pred)),conversation)
-        print_and_log("Colin: Recall: ", str(metrics.recall_score(y_test, y_pred, average='macro')),conversation)
+        #print("Colin: Confusion Matrix:\n",metrics.confusion_matrix(y_test, y_pred))
+        print("Colin: f1 score: ",metrics.f1_score(y_test, y_pred, average='micro',labels=np.unique(y_pred)))
+        print("Colin: Precision: ",metrics.precision_score(y_test, y_pred, average='micro',labels=np.unique(y_pred)))
+        print("Colin: Accuracy: ",metrics.accuracy_score(y_test, y_pred))
+        print("Colin: Recall: ",metrics.recall_score(y_test, y_pred, average='micro',labels=np.unique(y_pred)))
         end_time = process_time_ns()
         train_time = (end_time - start_time) * 0.000000001
-        print_and_log("Colin: Training Time in seconds = " + train_time,conversation)
+        print("Colin: Training Time in seconds = ",train_time)
         plt.figure("Machine Learning Data")
         plt.scatter(y_test, y_pred)
         slope, intercept, r_value, p_value, std_err = linregress(y_test, y_pred)
@@ -269,10 +261,9 @@ def NaiveBayes(target, labels, dataset,username,conversation):
         plt.ylabel("Predicted Data")
         plt.show()
     except ValueError:
-        print_and_log("Colin: oops there was an issue training these Features, sorry " + username.replace(':','').strip()
-                      ,conversation)
+        print("Colin: oops there was an issue training these Features, sorry " + username.replace(':','').strip())
 
-def RandomForestRegression(target, labels, dataset,username,conversation):
+def RandomForestRegression(target, labels, dataset,username):
     try:
         refinement = True
         #print(dataset)
@@ -290,7 +281,7 @@ def RandomForestRegression(target, labels, dataset,username,conversation):
         y = cleanDataset[target]
         #print(X)
         #print(y)
-
+        #encoded_X = encoding(X)
         crit_list = ["squared_error","absolute_error","friedman_mse","poisson"]
         mx_features = ["sqrt", "log2"]
 
@@ -329,17 +320,16 @@ def RandomForestRegression(target, labels, dataset,username,conversation):
                X_train,X_test = X.iloc[train_index],X.iloc[test_index]
                y_train,y_test = y.iloc[train_index],y.iloc[test_index]
                print("Colin: Fitting dataset using Random Forest Regressor fold ",count)
-               clf.fit(X_train,y_train)
+               clf.fit(encoding(X_train),y_train)
                print("Colin: predicting dataset using Random Forest Regressor fold ",count)
-               y_pred = clf.predict(X_test)
-            print_and_log("Colin: Mean Squared Error: " + str(metrics.mean_squared_error(y_test,y_pred)),conversation)
-            print_and_log("Colin: Root Mean Squared Error: " + str(metrics.mean_squared_error(y_test, y_pred,squared=False))
-                    ,conversation)
-            print_and_log("Colin: Mean Absolute Error: " + str(metrics.mean_absolute_error(y_test,y_pred)),conversation)
-            print_and_log("Colin: r2 score " + str(metrics.r2_score(y_test,y_pred)),conversation)
+               y_pred = clf.predict(encoding(X_test))
+            print("Colin: Mean Squared Error: ",metrics.mean_squared_error(y_test,y_pred))
+            print("Colin: Root Mean Squared Error: ",metrics.mean_squared_error(y_test, y_pred,squared=False))
+            print("Colin: Mean Absolute Error: ",metrics.mean_absolute_error(y_test,y_pred))
+            print("Colin: r2 score ",metrics.r2_score(y_test,y_pred))
             end_time = process_time_ns()
             train_time = (end_time - start_time) * 0.000000001
-            print_and_log("Colin: Training Time in seconds = " + str(train_time),conversation)
+            print("Colin: Training Time in seconds = ",train_time)
             plt.figure("Machine Learning Data")
             plt.scatter(y_test, y_pred)
             slope, intercept, r_value, p_value, std_err = linregress(y_test, y_pred)
@@ -349,70 +339,65 @@ def RandomForestRegression(target, labels, dataset,username,conversation):
             plt.ylabel("Predicted Data")
             plt.show()
 
-            refine_command = input_and_log("Colin: Would you like to refine hyper-perameters ?" + "\n"
-                                           + username,conversation)
+            refine_command = input("Colin: Would you like to refine hyper-perameters ?" + "\n" + username)
             if refine_command.lower().strip() in ['quit', 'no', 'n']:
                 refinement = False
             else:
                 redifined_list = refine_command.split(",")
                 for redifined in redifined_list:
                     if "n_estimators" in redifined:
-                        user_n_estimators = change_hyperperams_int("n_estimators=",
-                                                                   redifined, user_n_estimators,conversation)
+                        user_n_estimators = change_hyperperams_int("n_estimators=",redifined, user_n_estimators)
                     elif "max_depth" in redifined:
-                        user_max_depth = change_hyperperams_int("max_depth=", redifined, user_max_depth,conversation)
+                        user_max_depth = change_hyperperams_int("max_depth=", redifined, user_max_depth)
                     elif "criterion" in redifined:
                         for crit in crit_list:
                             if crit in redifined:
-                                user_criterion = change_hyperperams_String("criterion=",
-                                                                           redifined, user_criterion,conversation)
+                                user_criterion = change_hyperperams_String("criterion=", redifined, user_criterion)
                     elif "min_samples_split" in redifined:
-                        user_min_samples_split = change_hyperperams_int("min_samples_split=", redifined,
-                                                                        user_min_samples_split,conversation)
+                        user_min_samples_split = change_hyperperams_int("min_samples_split=", redifined, user_min_samples_split)
                     elif "min_samples_leaf" in redifined:
                         user_min_samples_leaf = change_hyperperams_int("min_samples_leaf=", redifined,
-                                                                       user_min_samples_leaf,conversation)
+                                                                       user_min_samples_leaf)
                     elif "min_weight_fraction_leaf" in redifined:
                         user_min_weight_fraction_leaf = change_hyperperams_Float("min_weight_fraction_leaf=", redifined,
-                                                                                 user_min_weight_fraction_leaf,conversation)
+                                                                                 user_min_weight_fraction_leaf)
                     elif "max_features" in redifined:
                         for mxf in mx_features:
                             if mxf in redifined:
                                 user_max_features = change_hyperperams_String("max_features=",
-                                                                              redifined, user_max_features,conversation)
+                                                                              redifined, user_max_features)
                     elif "max_leaf_nodes" in redifined:
                         user_max_leaf_nodes = change_hyperperams_int("max_leaf_nodes=", redifined,
-                                                                     user_max_leaf_nodes,conversation)
+                                                                     user_max_leaf_nodes)
                     elif "min_impurity_decrease" in redifined:
                         user_min_impurity_decrease = change_hyperperams_Float("min_impurity_decrease=", redifined,
-                                                                              user_min_impurity_decrease,conversation)
+                                                                              user_min_impurity_decrease)
                     elif "bootstrap" in redifined:
-                        user_bootstrap = change_hyperperams_bool("bootstrap=", redifined, user_bootstrap,conversation)
+                        user_bootstrap = change_hyperperams_bool("bootstrap=", redifined, user_bootstrap)
                     elif "oob_score" in redifined:
-                        user_oob_score = change_hyperperams_bool("oob_score=", redifined, user_oob_score,conversation)
+                        user_oob_score = change_hyperperams_bool("oob_score=", redifined, user_oob_score)
                     elif "n_jobs" in redifined:
-                        user_n_jobs = change_hyperperams_int("n_jobs=", redifined, user_n_jobs,conversation)
+                        user_n_jobs = change_hyperperams_int("n_jobs=", redifined, user_n_jobs)
                     elif "random_state" in redifined:
                         user_random_state = change_hyperperams_int("random_state=", redifined,
-                                                                   user_random_state,conversation)
+                                                                   user_random_state)
                     elif "verbose" in redifined:
-                        user_verbose = change_hyperperams_int("verbose=", redifined, user_verbose,conversation)
+                        user_verbose = change_hyperperams_int("verbose=", redifined, user_verbose)
                     elif "warm_start" in redifined:
-                        user_warm_start = change_hyperperams_bool("warm_start=", redifined, user_warm_start,conversation)
+                        user_warm_start = change_hyperperams_bool("warm_start=", redifined, user_warm_start)
                     elif "ccp_alpha" in redifined:
                         user_ccp_alpha = change_hyperperams_String("ccp_alpha=",
-                                                                   redifined, user_ccp_alpha,conversation)
+                                                                   redifined, user_ccp_alpha)
                     elif "max_samples" in redifined:
                         user_max_samples = change_hyperperams_Float("max_samples=",
-                                                                    redifined, user_max_samples,conversation)
+                                                                    redifined, user_max_samples)
                     elif "help" in redifined:
-                        helper(conversation)
+                        helper()
     except ValueError:
-        print_and_log("Colin: oops there was an issue training these Features, sorry "
-                      + username.replace(':','').strip(),conversation)
+        print("Colin: oops there was an issue training these Features, sorry " + username.replace(':','').strip())
 
 # Utility
-def printChoices(df,conversation):
+def printChoices(df):
     labels = df.columns.values
     labelView = ""
     # for loop uses modulus to print the label and move to the next line of the print
@@ -421,9 +406,9 @@ def printChoices(df,conversation):
         if i % 7 == 6:
             labelView += " |\n"
         labelView += " | " + labels[i]
-    print_and_log("Available features are: \n",conversation)
+    print("Available features are: \n")
     labelView += " |\n"
-    print_and_log(labelView,conversation)
+    print(labelView)
     return labels
 
 # label_selection method is used to search the requested Dataset and print all available labels represented in the
@@ -511,37 +496,49 @@ def find_target(user_input, dataset):
     else:
         print("not found")
 
-def change_hyperperams_int(hyper_peram,refine_command,Default_value,conversation):
+def encoding(X):
+    float_columns = list(X.select_dtypes('float64').columns)
+    categorical_columns = list(X.select_dtypes('int64').columns)
+
+    pipeline = ColumnTransformer([
+        ('num', StandardScaler(), float_columns),
+        ('cat', OrdinalEncoder(), categorical_columns),
+    ])
+
+    encoded_X = pipeline.fit_transform(X)
+    return encoded_X
+
+def change_hyperperams_int(hyper_peram,refine_command,Default_value):
     result = Default_value
     if hyper_peram in refine_command:
         if "=" in refine_command:
             result = int(refine_command[refine_command.rfind("=") + 1:])
         else:
             result = int(refine_command[refine_command.rfind(" ") + 1:])
-    print_and_log("Colin: Changed "+ hyper_peram.replace('=','').strip() + " to " + str(result),conversation)
+    print("Colin: Changed "+ hyper_peram.replace('=','').strip() + " to " + str(result))
     return result
 
-def change_hyperperams_String(hyper_peram,refine_command,Default_value,conversation):
+def change_hyperperams_String(hyper_peram,refine_command,Default_value):
     result = Default_value
     if hyper_peram in refine_command:
         if "=" in refine_command:
             result = refine_command[refine_command.rfind("=") + 1:]
         else:
             result = refine_command[refine_command.rfind(" ") + 1:]
-    print_and_log("Colin: Changed " + hyper_peram.replace('=','').strip() + " to " + result,conversation)
+    print("Colin: Changed " + hyper_peram.replace('=','').strip() + " to " + result)
     return result
 
-def change_hyperperams_Float(hyper_peram,refine_command,Default_value,conversation):
+def change_hyperperams_Float(hyper_peram,refine_command,Default_value):
     result = Default_value
     if hyper_peram in refine_command:
         if "=" in refine_command:
             result = float(refine_command[refine_command.rfind("=") + 1:])
         else:
             result = float(refine_command[refine_command.rfind(" ") + 1:])
-    print_and_log("Colin: Changed " + hyper_peram.replace('=','').strip() + " to " + str(result),conversation)
+    print("Colin: Changed " + hyper_peram.replace('=','').strip() + " to " + str(result))
     return result
 
-def change_hyperperams_bool(hyper_peram,refine_command,Default_value,conversation):
+def change_hyperperams_bool(hyper_peram,refine_command,Default_value):
     commandResult = Default_value
     if hyper_peram in refine_command:
         if "=" in refine_command:
@@ -550,15 +547,15 @@ def change_hyperperams_bool(hyper_peram,refine_command,Default_value,conversatio
         else:
             commandResult = refine_command[refine_command.rfind(" ") + 1:].lower() in ['true']
 
-    print_and_log("Colin: Changed " + hyper_peram.replace('=','').strip() + " to " + str(commandResult),conversation)
+    print("Colin: Changed " + hyper_peram.replace('=','').strip() + " to " + str(commandResult))
     return commandResult
 
-def helper(conversation):
-    print_and_log("- Criterion takes the values 'gini' or 'entropy' for example  type: criterion=gini"
+def helper():
+    print("- Criterion takes the values 'gini' or 'entropy' for example  type: criterion=gini"
           ", as the command to change this hyper-parameters\n- n_estimators takes an int value, "
           "for example type: n_estimators=10"
           ", as the command to change this hyper-parameters\n- max_depth takes an int value for example  type: criterion=gini"
-          ", as the command to change this hyper-parameters\n",conversation)
+          ", as the command to change this hyper-parameters\n")
 
 def print_and_log(message,conversation):
     timestamp = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")

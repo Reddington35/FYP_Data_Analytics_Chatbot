@@ -4,9 +4,11 @@ from spacy.matcher import PhraseMatcher
 import Tasks
 import plot_tasks
 
+# nlp model loaded using GPU for training the model
 sp.prefer_gpu()
 nlp = sp.load("en_core_web_lg")
 
+# phrase_match function used match user input to pattern in interpretation.json
 def phrase_match(user_input, dataset,username):
     matcher = PhraseMatcher(nlp.vocab)
     while True:
@@ -14,6 +16,7 @@ def phrase_match(user_input, dataset,username):
             sList = []
             for sText in dataset[key]["Patterns"]:
                 sList.append(nlp(str(sText).lower()))
+            # matches term to list item
             matcher.add(key, sList)
         doc = nlp(user_input.lower())
         matches = matcher(doc)
@@ -37,7 +40,7 @@ def label_match(user_input, dataset,username):
         matched = [nlp.vocab.strings[s[0]] for s in matches]
         if len(matched) > 0:
             break;
-        print("colin: Cannot find feature could you please type exact spelling for given feature\n")
+        print("Colin: Cannot find feature could you please type exact spelling for given feature")
         user_input = input(username)
         print("Colin: Thank you for clearing that up")
     return matched
