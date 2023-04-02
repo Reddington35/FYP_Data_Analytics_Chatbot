@@ -87,19 +87,19 @@ def RandomForest(target, labels, dataset):
 
 #RandomForest("Cases - cumulative total","Deaths - newly reported in last 24 hours","datasets/WHO_covid.csv")
 
-# def encoding(dataset):
-#     df = pd.read_csv(dataset, index_col=False)
-#     print(df['weekly_hosp_admissions'])
-#     feat = df.head(0).applymap(str)
-#     new_features = feat.columns.values
-#     world = pd.DataFrame(new_features,columns=['new_features'])
-#
-#     print(df['location'].dtype)
-#     label_encoder = LabelEncoder()
-#     world['new_features_Cat'] = label_encoder.fit_transform(world['new_features'])
-#     print(world['new_features_Cat'])
-#
-# encoding("datasets/covid_World.csv")
+def encoding(dataset):
+    df = pd.read_csv(dataset, index_col=False)
+    print(df['weekly_hosp_admissions'])
+    feat = df.head(0).applymap(str)
+    new_features = feat.columns.values
+    world = pd.DataFrame(new_features,columns=['new_features'])
+
+    print(df['location'].dtype)
+    label_encoder = LabelEncoder()
+    world['new_features_Cat'] = label_encoder.fit_transform(world['new_features'])
+    print(world['new_features_Cat'])
+
+encoding("datasets/covid_World.csv")
 
 def encoding(X):
     float_columns = list(X.select_dtypes('float64').columns)

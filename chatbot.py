@@ -1,5 +1,4 @@
 import os
-from os.path import isfile, join
 from datetime import datetime
 import spacy as sp
 import json
@@ -58,8 +57,7 @@ def chatbot():
             deserialise_user(sorted_file)
 
     Tasks.print_and_log("Colin: " + "So " + username.replace(':','').strip() + " Which dataset will we be working with today?\n"
-          "- covid_Eu.csv\n- covid_Ireland.csv\n- covid_World.csv\n- WHO_covid.csv\n- Custom.csv\n"
-                                                                               "- drug_prediction",conversation)
+          "- covid_Eu.csv\n- covid_Ireland.csv\n- covid_World.csv\n- WHO_covid.csv",conversation)
 
     # statement takes in the user input in lowercase
     statement = Tasks.input_and_log(username,conversation)
@@ -138,6 +136,9 @@ def customer_feedback(username):
         Tasks.print_and_log("Colin: Did you find me efficient,in how I performed the tasks asked of me, if not where "
                     "in your opinion could I improve?",conversation)
         Tasks.input_and_log(username,conversation)
+        Tasks.print_and_log("Colin: Could you please enter your full name here, and if applicable could you please"
+                            " provide your Student Number for the purposes of evaluating my performance", conversation)
+        Tasks.input_and_log(username, conversation)
         Tasks.print_and_log("Colin: Thank You " + username.replace(':','').strip() + " and have a good day",conversation)
 
 def deserialise_user(path):

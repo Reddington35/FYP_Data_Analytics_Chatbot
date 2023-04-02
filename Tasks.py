@@ -14,7 +14,6 @@ import numpy as np
 import NLP
 import warnings
 
-import Testing
 
 warnings.filterwarnings('ignore')
 
@@ -67,23 +66,14 @@ def RandomForestClassification(target, labels, dataset,username):
         #print(dataset)
         newLabels = labels
         newLabels.append(target)
-        #print("Labels: " + str(newLabels))
         newDataset = dataset[newLabels].copy()
-        #print("Dataset: ")
-        #print(newDataset)
+
         cleanDataset = newDataset.dropna()
-        # cleanDataset = cleanDataset.head(50000)
-        #print(cleanDataset)
+
 
         X = cleanDataset[labels]
         y = cleanDataset[target]
-        #print(X)
-        #print(y)
 
-        # use StandardScaler to normalise and scale the data
-        # scaler = StandardScaler()
-        # scaled_X = scaler.fit_transform(X)
-        # #print(scaled_X)
         encoded_X = encoding(X)
 
         crit_list = ["gini","entropy"]
@@ -110,7 +100,7 @@ def RandomForestClassification(target, labels, dataset,username):
         user_ccp_alpha = 0.0
         user_max_samples = None
 
-        X_train, X_test, y_train, y_test = train_test_split(encoded_X,y, test_size=0.2)
+        X_train, X_test, y_train, y_test = train_test_split(encoded_X,y,random_state=16, test_size=0.2)
         while refinement:
             start_time = process_time_ns()
             clf = RandomForestClassifier(n_estimators=user_n_estimators,max_depth=user_max_depth,criterion=user_criterion,
@@ -141,6 +131,7 @@ def RandomForestClassification(target, labels, dataset,username):
             print("Colin: Precision: ", metrics.precision_score(y_test, y_pred,average='weighted'))
             print("Colin: Accuracy: ",metrics.accuracy_score(y_test, y_pred))
             print("Colin: Recall: ",metrics.recall_score(y_test, y_pred,average='micro'))
+            # print("predicted values are:", y_pred)
             end_time = process_time_ns()
             train_time = (end_time - start_time) * 0.000000001
             print("Colin: Training Time in seconds = ",train_time)
@@ -237,7 +228,7 @@ def NaiveBayes(target, labels, dataset,username):
         encoded_X = encoding(X)
         #print(scaled_X)
 
-        X_train, X_test, y_train, y_test = train_test_split(encoded_X, y, test_size=0.2)
+        X_train, X_test, y_train, y_test = train_test_split(encoded_X, y,random_state=16, test_size=0.2)
         start_time = process_time_ns()
         clf = GaussianNB()
         print("Colin: Fitting dataset using Naive Bayes")
@@ -245,10 +236,11 @@ def NaiveBayes(target, labels, dataset,username):
         print("Colin: predicting dataset using Naive Bayes")
         y_pred = clf.predict(X_test)
         #print("Colin: Confusion Matrix:\n",metrics.confusion_matrix(y_test, y_pred))
-        print("Colin: f1 score: ",metrics.f1_score(y_test, y_pred, average='micro',labels=np.unique(y_pred)))
-        print("Colin: Precision: ",metrics.precision_score(y_test, y_pred, average='micro',labels=np.unique(y_pred)))
+        print("Colin: f1 score: ",metrics.f1_score(y_test, y_pred, average='weighted'))
+        print("Colin: Precision: ",metrics.precision_score(y_test, y_pred, average='weighted'))
         print("Colin: Accuracy: ",metrics.accuracy_score(y_test, y_pred))
-        print("Colin: Recall: ",metrics.recall_score(y_test, y_pred, average='micro',labels=np.unique(y_pred)))
+        print("Colin: Recall: ",metrics.recall_score(y_test, y_pred, average='micro'))
+        #print("predicted values are:", y_pred)
         end_time = process_time_ns()
         train_time = (end_time - start_time) * 0.000000001
         print("Colin: Training Time in seconds = ",train_time)
@@ -312,7 +304,7 @@ def RandomForestRegression(target, labels, dataset,username):
                                          bootstrap=user_bootstrap,oob_score=user_oob_score,n_jobs=user_n_jobs,
                                          random_state=user_random_state,verbose=user_verbose,warm_start=user_warm_start,
                                          ccp_alpha=user_ccp_alpha,max_samples=user_max_samples)
-            kf = KFold(n_splits=10,random_state=10, shuffle=True)
+            kf = KFold(n_splits=10,random_state=16, shuffle=True)
             kf.get_n_splits(X)
             count = 0
             for train_index,test_index in kf.split(X):
@@ -321,12 +313,13 @@ def RandomForestRegression(target, labels, dataset,username):
                y_train,y_test = y.iloc[train_index],y.iloc[test_index]
                print("Colin: Fitting dataset using Random Forest Regressor fold ",count)
                clf.fit(encoding(X_train),y_train)
-               print("Colin: predicting dataset using Random Forest Regressor fold ",count)
-               y_pred = clf.predict(encoding(X_test))
+            print("Colin: predicting dataset using Random Forest Regressor fold ",count)
+            y_pred = clf.predict(encoding(X_test))
             print("Colin: Mean Squared Error: ",metrics.mean_squared_error(y_test,y_pred))
             print("Colin: Root Mean Squared Error: ",metrics.mean_squared_error(y_test, y_pred,squared=False))
             print("Colin: Mean Absolute Error: ",metrics.mean_absolute_error(y_test,y_pred))
             print("Colin: r2 score ",metrics.r2_score(y_test,y_pred))
+            # print("predicted values are:", y_pred)
             end_time = process_time_ns()
             train_time = (end_time - start_time) * 0.000000001
             print("Colin: Training Time in seconds = ",train_time)

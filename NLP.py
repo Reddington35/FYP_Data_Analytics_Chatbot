@@ -21,7 +21,7 @@ def phrase_match(user_input, dataset,username):
         doc = nlp(user_input.lower())
         matches = matcher(doc)
         matched = [nlp.vocab.strings[s[0]] for s in matches]
-
+        # checks to see if input matches pattern, if not print statement
         if len(matched) > 0:
             break;
         print("colin: Sorry I did not quiet catch that, could you rephrase please " + username.replace(':','').strip())
@@ -29,14 +29,17 @@ def phrase_match(user_input, dataset,username):
         print("Colin: Thank you for clearing that up")
     return dataset[matched[0]]
 
+# uses SpaCy Phrase Matcher to loop through the features in the dataset and if their present add them to the list,
+# which will then be placed in the NLP model
 def label_match(user_input, dataset,username):
     matcher = PhraseMatcher(nlp.vocab)
     while True:
         for label in dataset:
             matcher.add(label, [nlp(label)])
-
+        # user input added to NLP model
         doc = nlp(user_input)
         matches = matcher(doc)
+        # loop that checks to see if user
         matched = [nlp.vocab.strings[s[0]] for s in matches]
         if len(matched) > 0:
             break;
