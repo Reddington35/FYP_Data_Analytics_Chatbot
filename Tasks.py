@@ -33,9 +33,13 @@ def data_summary(dataset,conversation):
     print("\n*****************************************************************************************************************\n")
     return df
 
+# method used to view a dataset for trial superposes and debugging
 def data_plot(dataset, username, request):
     df = pd.read_csv(dataset,index_col=False)
 
+# method used in conjunction with label_match method from NLP.py file
+# Prints Labels and allows the user to choose the target variable and input variables
+# Method also used to call the chosen ML Algorithm using interpretation.json file
 def data_ml(dataset, username, request):
     df = pd.read_csv(dataset['Location'],index_col=False)
     labels = printChoices(df)
@@ -44,7 +48,6 @@ def data_ml(dataset, username, request):
     choice = input(username)
     #print(choice)
     # make sure we get a non-empty list from label match
-
     target = NLP.label_match(choice, labels,username)[0]
     labels = printChoices(df)
     print("Colin: Give parameters please " + username)
@@ -56,10 +59,11 @@ def data_ml(dataset, username, request):
 
     for label in params:
         labels.append(label)
-
+    # Calls selected ML Algorithm selected from Main Menu Loop
     globals()[request['def']](target, labels, df, username)
 
 # ML Methods
+# Random Forest Classifier
 def RandomForestClassification(target, labels, dataset,username):
     try:
         refinement = True
@@ -100,6 +104,7 @@ def RandomForestClassification(target, labels, dataset,username):
         user_ccp_alpha = 0.0
         user_max_samples = None
 
+        # Train/Test Split
         X_train, X_test, y_train, y_test = train_test_split(encoded_X,y,random_state=16, test_size=0.2)
         while refinement:
             start_time = process_time_ns()
@@ -111,8 +116,10 @@ def RandomForestClassification(target, labels, dataset,username):
                                          random_state=user_random_state,verbose=user_verbose,warm_start=user_warm_start,
                                          class_weight=user_class_weight,ccp_alpha=user_ccp_alpha,max_samples=user_max_samples)
             print("Colin: Fitting dataset using Random Forest Classifier")
+            # Fit Dataset
             clf.fit(X_train, y_train)
             print("Colin: predicting dataset using Random Forest Classifier")
+            # Predict Dataset
             y_pred = clf.predict(X_test)
             #res = metrics.confusion_matrix(y_test, y_pred)
             print("Colin: Confusion Matrix:\n",metrics.confusion_matrix(y_test, y_pred))
@@ -127,14 +134,18 @@ def RandomForestClassification(target, labels, dataset,username):
             # # Area under curve
             # auc_pred = auc(recall, precision)
             # print(auc_pred)
+
+            # Metrics used
             print("Colin: f1 score: ", metrics.f1_score(y_test,y_pred, average='weighted'))
             print("Colin: Precision: ", metrics.precision_score(y_test, y_pred,average='weighted'))
             print("Colin: Accuracy: ",metrics.accuracy_score(y_test, y_pred))
             print("Colin: Recall: ",metrics.recall_score(y_test, y_pred,average='micro'))
             # print("predicted values are:", y_pred)
+            # time ML process
             end_time = process_time_ns()
             train_time = (end_time - start_time) * 0.000000001
             print("Colin: Training Time in seconds = ",train_time)
+            # Plot Scatter Plot of Actual Vs Predicted results
             plt.figure("Machine Learning Data")
             plt.scatter(y_test,y_pred)
             slope, intercept, r_value, p_value, std_err = linregress(y_test,y_pred)
@@ -143,7 +154,7 @@ def RandomForestClassification(target, labels, dataset,username):
             plt.xlabel("Actual Data",color='purple')
             plt.ylabel("Predicted Data",color='green')
             plt.show()
-
+            # code to perform HP Changes for algorithm
             refine_command = input("Colin: Would you like to refine hyper-parameters ?" +"\n" + username)
             if refine_command.lower().strip() in ['quit', 'no', 'n']:
                 refinement = False
@@ -199,11 +210,13 @@ def RandomForestClassification(target, labels, dataset,username):
                         user_ccp_alpha = change_hyperperams_String("ccp_alpha=",redifined,user_ccp_alpha)
                     elif "max_samples" in redifined:
                         user_max_samples = change_hyperperams_Float("max_samples=",redifined, user_max_samples)
+                    # Help Method should the user require assistance
                     elif "help" in redifined:
                         helper()
     except ValueError:
        print("Colin: oops there was an issue training these Features, sorry " + username.replace(':', '').strip())
 
+# Naive Bayes Algorithm for classification task
 def NaiveBayes(target, labels, dataset,username):
     try:
         #print(dataset)
@@ -255,6 +268,7 @@ def NaiveBayes(target, labels, dataset,username):
     except ValueError:
         print("Colin: oops there was an issue training these Features, sorry " + username.replace(':','').strip())
 
+# Random Forest Regressor method for regression task
 def RandomForestRegression(target, labels, dataset,username):
     try:
         refinement = True
@@ -304,6 +318,7 @@ def RandomForestRegression(target, labels, dataset,username):
                                          bootstrap=user_bootstrap,oob_score=user_oob_score,n_jobs=user_n_jobs,
                                          random_state=user_random_state,verbose=user_verbose,warm_start=user_warm_start,
                                          ccp_alpha=user_ccp_alpha,max_samples=user_max_samples)
+            # cross validation using KFold
             kf = KFold(n_splits=10,random_state=16, shuffle=True)
             kf.get_n_splits(X)
             count = 0
@@ -421,7 +436,7 @@ def feature_selection(dataset):
     print("Available Features: \n")
     labelView += " |\n"
     print(labelView)
-
+# method used for dataset selection process
 def load_dataset(statement,queryTexts,username,conversation):
     # Getting dataset section
     content = False
@@ -457,6 +472,7 @@ def load_dataset(statement,queryTexts,username,conversation):
                 contentAnswer = True
         return dataset
 
+# test method for changing Dataset, not used in final build, just for testing purposes
 def change_Datasets(dataset):
     df = pd.read_csv(dataset['Location'],index_col=False)
     return df
@@ -489,6 +505,7 @@ def find_target(user_input, dataset):
     else:
         print("not found")
 
+# encoding method used fro scaling and category encoding
 def encoding(X):
     float_columns = list(X.select_dtypes('float64').columns)
     categorical_columns = list(X.select_dtypes('int64').columns)
@@ -501,6 +518,7 @@ def encoding(X):
     encoded_X = pipeline.fit_transform(X)
     return encoded_X
 
+# method used for altering HP values of type Int
 def change_hyperperams_int(hyper_peram,refine_command,Default_value):
     result = Default_value
     if hyper_peram in refine_command:
@@ -511,6 +529,7 @@ def change_hyperperams_int(hyper_peram,refine_command,Default_value):
     print("Colin: Changed "+ hyper_peram.replace('=','').strip() + " to " + str(result))
     return result
 
+# method used for altering HP values of type String
 def change_hyperperams_String(hyper_peram,refine_command,Default_value):
     result = Default_value
     if hyper_peram in refine_command:
@@ -521,6 +540,7 @@ def change_hyperperams_String(hyper_peram,refine_command,Default_value):
     print("Colin: Changed " + hyper_peram.replace('=','').strip() + " to " + result)
     return result
 
+# method used for altering HP values of type Float
 def change_hyperperams_Float(hyper_peram,refine_command,Default_value):
     result = Default_value
     if hyper_peram in refine_command:
@@ -531,6 +551,7 @@ def change_hyperperams_Float(hyper_peram,refine_command,Default_value):
     print("Colin: Changed " + hyper_peram.replace('=','').strip() + " to " + str(result))
     return result
 
+# method used for altering HP values of type Bool
 def change_hyperperams_bool(hyper_peram,refine_command,Default_value):
     commandResult = Default_value
     if hyper_peram in refine_command:
@@ -543,6 +564,7 @@ def change_hyperperams_bool(hyper_peram,refine_command,Default_value):
     print("Colin: Changed " + hyper_peram.replace('=','').strip() + " to " + str(commandResult))
     return commandResult
 
+# method helper() provides help for user on how to input HP values
 def helper():
     print("- Criterion takes the values 'gini' or 'entropy' for example  type: criterion=gini"
           ", as the command to change this hyper-parameters\n- n_estimators takes an int value, "
@@ -550,12 +572,14 @@ def helper():
           ", as the command to change this hyper-parameters\n- max_depth takes an int value for example  type: criterion=gini"
           ", as the command to change this hyper-parameters\n")
 
+# method used to record prints made by chatbot
 def print_and_log(message,conversation):
     timestamp = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
     if len(message) > 0:
         conversation.append(timestamp + " " + message)
     print(message)
 
+# method used to record User Input, relevant data only
 def input_and_log(message,conversation):
     timestamp = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
     user_input = input(message)

@@ -70,6 +70,7 @@ def chatbot():
               "help on topics such as:\n - Data summary of the Dataset\n - Graph the Dataset\n - Build a ml model of the"
               " dataset using (Random Forrest Classification, Naive Bayes or Random Forest Regression"
               "\n - Display the available Features",conversation)
+    # Main Menu Loop
     # While loop that checks to see if the user wants to quit the application
     # or choose from four distinct services available
     while not done:
@@ -77,13 +78,16 @@ def chatbot():
         task = Tasks.input_and_log(username,conversation)
         # Are we changing Dataset or running Approach?
         request = check_command(task, queryTexts["Approach"],username)
-
+        # statement checks if user is done
         if request == "Done":
             Tasks.print_and_log("Colin: No Problem " + username.replace(':',''),conversation)
         else:
+            # Collection of Statements to apply different features requested by the client
+            # request calls load_dataset function located in the Tasks.py file in order to change dataset
             if request["Categorization"] == "Change_Dataset":
                 dataset = Tasks.load_dataset(task, queryTexts, username,conversation)
-
+            # request plot used to differentiate between plot types using Categorisation attribute,
+            # and then Title Attribute
             elif request["Categorization"] == "Plot":
                 if request["Title"] == "Line Chart":
                     plot_tasks.dynamic_line_chart(dataset,task,task,username)
@@ -93,15 +97,16 @@ def chatbot():
                     plot_tasks.dynamic_scatter_chart(dataset,task,task,username)
                 elif request["Title"] == "Histogram Chart":
                     plot_tasks.dynamic_histogram(dataset,task,username)
-
+            # request to train a model which calls the data_ml function from the Tasks.py file
             elif request["Categorization"] == "Train":
                 Tasks.data_ml(dataset, username, request)
-
+            # request to print a summary, which calls the data_summary function from the Tasks.py file
             elif request["Categorization"] == "Display":
                 Tasks.data_summary(dataset,conversation)
-
+            # request to print Feature Selection, which calls the feature_selection function from the Tasks.py file
             elif request["Categorization"] == "Features":
                 Tasks.feature_selection(dataset)
+    # customer feedback function called here once client leaves Main Menu Loop
     customer_feedback(username)
     # save conversation to pickle file
     timestamp = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
@@ -109,6 +114,7 @@ def chatbot():
     with open(path + username.replace(':','').strip() + timestamp + ".pkl", 'wb') as f:
         pickle.dump(conversation, f)
 
+# Function that runs a check to see if the client would like to quit the conversation
 def check_command(command, dataset,username):
     if "quit" in command.lower() or "exit" in command.lower():
         if Tasks.decision_handler("Colin: Do you wish to quit chatting " + username.replace(":","").strip(),username):
@@ -119,6 +125,7 @@ def check_command(command, dataset,username):
         return "Done"
     return NLP.phrase_match(command, dataset,username)
 
+# Function handles all customer feedback requests
 def customer_feedback(username):
     user_complete = Tasks.decision_handler("Colin: Before I complete signing you out of the chat,"
                            " Would you please complete some short feedback questions"
@@ -141,6 +148,7 @@ def customer_feedback(username):
         Tasks.input_and_log(username, conversation)
         Tasks.print_and_log("Colin: Thank You " + username.replace(':','').strip() + " and have a good day",conversation)
 
+# Function used for Deserialization of a file
 def deserialise_user(path):
     with open(path, 'rb') as f:
         print_chat = pickle.load(f)
@@ -152,6 +160,7 @@ def user_login(login):
     login = login + ":"
     return login
 
+# trial function not used in primary build
 def add_user(username):
     users = []
     users.append(username)

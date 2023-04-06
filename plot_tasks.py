@@ -3,6 +3,8 @@ import pandas as pd
 import Tasks
 
 # World Dataset operations using different types of charts
+# used as a prototype function for basic graphing usig the Pandas library
+# not used in final Build
 def make_line_chart(dataset,entry_field,exit_field,target,region,location,start_date,end_date,color):
      # read in dataframe
      df = pd.read_csv(dataset['Location'],index_col=False)
@@ -29,6 +31,7 @@ def make_line_chart(dataset,entry_field,exit_field,target,region,location,start_
 #make_line_chart("datasets/covid_world.csv","continent","location","new_deaths","Europe","Ireland","2020-02-29","2023-01-15","purple")
 
 # Function for plotting a Scatter Plot
+# Not used in final Build
 def make_scatterplot(dataset,entry_field,exit_field,x,y,region,location,start_date,end_date,color):
      df = pd.read_csv(dataset,index_col=False)
      df = df[(df[entry_field] == region) & (df[exit_field] == location)]
@@ -48,13 +51,19 @@ def make_scatterplot(dataset,entry_field,exit_field,x,y,region,location,start_da
 
 # Function for plotting Bar Chart
 def make_barchart(dataset,entry_field,exit_field,x,y,region,location,start_date,end_date,color):
+     # reads in dataframe
      df = pd.read_csv(dataset,index_col=False)
+     # seperates df by region or location
      df = df[(df[entry_field] == region) & (df[exit_field] == location)]
      print("result is ", df)
+     # using date time object to fetch date
      df['date'] = pd.to_datetime(df['date'])
+     # function to set index of date from df
      df = df.set_index(df['date'])
+     # df being partitioned her by ,region,location,start and end date
      df = df[(df[entry_field] == region) & (df[exit_field] == location) & (df['date'] > start_date) & (
              df['date'] < end_date)]
+     # Bar Graph function
      plt.bar(df[x], df[y], color=color)
      plt.title("comparing " + x + " to " + y, fontsize=14)
      plt.xlabel("From " + start_date + " to " + end_date, fontsize=14)
@@ -64,7 +73,8 @@ def make_barchart(dataset,entry_field,exit_field,x,y,region,location,start_date,
 
 #make_barchart("datasets/covid_world.csv","continent","location","date","new_deaths","Europe","Ireland","2020-02-29","2023-01-15","purple")
 
-# Function for plotting Bar Chart
+# Function for plotting Histogram
+# Not used in final build
 def make_histogram(dataset,entry_field,exit_field,x,region,location,start_date,end_date,color):
      df = pd.read_csv(dataset, index_col=False)
      df = df[(df[entry_field] == region) & (df[exit_field] == location)]
@@ -73,6 +83,7 @@ def make_histogram(dataset,entry_field,exit_field,x,region,location,start_date,e
      df = df.set_index(df['date'])
      df = df[(df[entry_field] == region) & (df[exit_field] == location) & (df['date'] > start_date) & (
              df['date'] < end_date)]
+     # Histogram function
      df.hist(x, figsize=[12,12],bins=12,color=color)
      plt.title("Title:" + x, fontsize=14)
      plt.xlabel("From " + start_date + " to " + end_date, fontsize=14)
@@ -81,7 +92,10 @@ def make_histogram(dataset,entry_field,exit_field,x,region,location,start_date,e
      plt.show()
 #make_histogram("datasets/covid_world.csv","continent","location","new_deaths","Europe","Ireland","2020-02-29","2023-01-15","purple")
 
+# Dynamic functions for graphing
+# Selected as suitable choice for final build
 def dynamic_line_chart(dataset,x_input,y_input,username):
+     # wrapped in Try/except incase of user error
           try:
                # read in dataframe
                df = pd.read_csv(dataset["Location"], index_col=False)
@@ -115,16 +129,19 @@ def dynamic_line_chart(dataset,x_input,y_input,username):
                     print("Colin: How would you like me to Refine this graph " + username.replace(':','').strip() + "?\n"
                           "Colin: Type 'help' if you require any assistance with this feature\n")
                     user_command = input(username)
+                    # help menu called here if user requests help by typing "help" to the console
                     if "help" in user_command.lower():
                          help_screen(dataset)
 
                     # filter command
                     #filter_dataset(dataset, user_command, username)
+                    # filtering options applied here unless user types quit
                     if user_command.lower().strip() not in ('quit'):
                          commands_list = user_command.split(",")
                          col = "blue"
                          for c in commands_list:
                               if len(c.lower().strip()) > 3:
+                                   # color select function called here
                                    col = color_select(c)
                                    is_refined = False
                                    new_x_input = change_x_input(c, dataset, x_input)
@@ -162,6 +179,8 @@ def dynamic_line_chart(dataset,x_input,y_input,username):
                print("Colin: oops something went wrong with your graph,\n please leave a comment in the feedback section about"
                     " this issue and I will try to fix it as soon as I can")
 
+# Dynamic functions for graphing
+# Selected as suitable choice for final build
 def dynamic_bar_chart(dataset,x_input,y_input,username):
      try:
           # read in dataframe
@@ -237,6 +256,8 @@ def dynamic_bar_chart(dataset,x_input,y_input,username):
           print("Colin: oops something went wrong with your graph,\n please leave a comment in the feedback section about"
                 " this issue and I will try to fix it as soon as I can")
 
+# Dynamic functions for graphing
+# Selected as suitable choice for final build
 def dynamic_scatter_chart(dataset,x_input,y_input,username):
      try:
           # read in dataframe
@@ -313,6 +334,8 @@ def dynamic_scatter_chart(dataset,x_input,y_input,username):
           print("Colin: oops something went wrong with your graph,\n please leave a comment in the feedback section about"
                 " this issue and I will try to fix it as soon as I can")
 
+# Dynamic functions for graphing
+# Selected as suitable choice for final build
 def dynamic_histogram(dataset,x_input,username):
      try:
           # read in dataframe
@@ -388,6 +411,7 @@ def dynamic_histogram(dataset,x_input,username):
           print("Colin: oops something went wrong with your graph,\n please leave a comment in the feedback section about"
                 " this issue and I will try to fix it as soon as I can")
 
+# group features function used to add features for a list as String items
 def group_features(dataset):
      df = pd.read_csv(dataset['Location'], index_col=False)
      features = []
@@ -397,6 +421,7 @@ def group_features(dataset):
      return data
 #group_features("datasets/covid_World.csv")
 
+# color select function which is used to change the color of a graph
 def color_select(user_input):
      # Default color set
      color = "blue"
@@ -407,6 +432,7 @@ def color_select(user_input):
                color = str(i)
      return color
 
+# Function used to change the x variable in the graph
 def change_x_input(user_input,dataset,x_input):
      x = x_input
      x_list = ["change x input","change x co-ordinate","change x","update x","update x co-ordinate",
@@ -426,7 +452,7 @@ def change_x_input(user_input,dataset,x_input):
                     return target_x
      return x
 
-
+# Function used to change the y variable in the graph
 def change_y_input(user_input,dataset,y_input):
      y = y_input
      y_command =["y=","y =","change y to","update y to"]
@@ -444,6 +470,7 @@ def change_y_input(user_input,dataset,y_input):
                     return target_y
      return y
 
+# Function used to change the title input in the graph
 def change_title_input(user_input,t_input):
      t = t_input
      titles = ["title="]
@@ -459,6 +486,7 @@ def change_title_input(user_input,t_input):
                return target_title
      return t
 
+# Function used to change the figure input in the graph
 def change_figure_input(user_input,f_input):
      f = f_input
      figure = ["figure="]
@@ -474,6 +502,7 @@ def change_figure_input(user_input,f_input):
                return target_figure
      return f
 
+# Function used to change the number of bins in the graph
 def change_bin_input(user_input,b_input):
      b = b_input
      bins = ["bins="]
@@ -489,6 +518,7 @@ def change_bin_input(user_input,b_input):
                return target_bins
      return b
 
+# Help menu provided should user require help on how to input graphing changes
 def help_screen(dataset):
      #print Features, with clear instructions for each command needed for graph refinement process
      Tasks.feature_selection(dataset)
@@ -500,6 +530,7 @@ def help_screen(dataset):
                 "For Example:  title=Title Name,figure=Name of Figure\n"
                 "Colin: If your finished refining the graph please reply 'quit' as your response\n")
 
+# method for filtering Dataset
 def filter_dataset(dataset,command,username):
      features = group_features(dataset)
      #filter_greater = ["filter by"]

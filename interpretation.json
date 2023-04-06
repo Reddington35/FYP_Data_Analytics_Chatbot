@@ -6,7 +6,7 @@
       "PatternTitle": "Dataset_Irl",
       "Patterns": ["COVID-19 HSE Daily Vaccination Figures Ireland 2021/04/07 - 2022/12/04 ","Irish","irish",
         "ire","Irish Dataset","irish dataset","Ireland","IRELAND","ireland","republic of ireland","Republic of Ireland",
-        "REPUBLIC OF IRELAND"],
+        "REPUBLIC OF IRELAND","covid_Ireland.csv"],
       "Location": "datasets/covid_Ireland.csv"
     },
     "EU_Covid": {
@@ -15,14 +15,15 @@
       "PatternTitle": "Dataset_EU",
       "Patterns": ["COVID-19 vaccination EU/EEA EU covid","eu","EU","E.U","europe","Europe","EUROPE","european union"
       ,"European Union","EUROPEAN UNION","euro","Euro","EURO","eu dataset","EU Dataset","european dataset",
-        "European Dataset"],
+        "European Dataset","covid_Eu.csv"],
       "Location": "datasets/covid_EU.csv"
     },
     "WHO_covid": {
       "Title": "WHO Coronavirus (COVID-19) Global Data",
       "SupportText": "WHO Coronavirus (COVID-19) Global Dataset world who covid-19",
       "PatternTitle": "Dataset_WHO",
-      "Patterns": ["WHO Coronavirus (COVID-19) Global Dataset world who covid-19","WHO Dataset","who dataset"],
+      "Patterns": ["WHO Coronavirus (COVID-19) Global Dataset world who covid-19","WHO Dataset","who dataset"
+      ,"WHO_covid.csv"],
       "Location": "datasets/WHO_covid.csv"
     },
     "World_Covid": {
@@ -30,7 +31,7 @@
       "SupportText": "World covid-19 vaccination covid world global",
       "PatternTitle": "Dataset_World",
       "Patterns": ["World covid-19 vaccination covid world global","world dataset","World Dataset","global dataset",
-        "Global Dataset","global","World","world","WORLD","WORLD DATASET"],
+        "Global Dataset","global","World","world","WORLD","WORLD DATASET","covid_World.csv"],
       "Location": "datasets/covid_World.csv"
     },
     "Irish_World": {
