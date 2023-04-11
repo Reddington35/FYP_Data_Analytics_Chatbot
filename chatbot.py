@@ -74,7 +74,8 @@ def chatbot():
     # While loop that checks to see if the user wants to quit the application
     # or choose from four distinct services available
     while not done:
-        Tasks.print_and_log("Colin: which task would you like me to perform?",conversation)
+        Tasks.print_and_log("Colin: which task would you like me to perform, if you need assistance just type help?"
+                            ,conversation)
         task = Tasks.input_and_log(username,conversation)
         # Are we changing Dataset or running Approach?
         request = check_command(task, queryTexts["Approach"],username)
@@ -106,6 +107,8 @@ def chatbot():
             # request to print Feature Selection, which calls the feature_selection function from the Tasks.py file
             elif request["Categorization"] == "Features":
                 Tasks.feature_selection(dataset)
+            elif request["Categorization"] == "help":
+                help_menu(username)
     # customer feedback function called here once client leaves Main Menu Loop
     customer_feedback(username)
     # save conversation to pickle file
@@ -165,6 +168,16 @@ def add_user(username):
     users = []
     users.append(username)
     return users
+
+# help_menu added as requested during customer feedback
+def help_menu(username):
+    print("Colin: " + "So " + username.replace(':','').strip() + " The choice of datasets are as follows:\n"
+          "- covid_Eu.csv\n- covid_Ireland.csv\n- covid_World.csv\n- WHO_covid.csv")
+    print("Colin: The choice of ML Algorithms are as follows:\n- Naive Bayes\n- Random Forest Classification\n"
+          "- Random Forest Regression")
+    print("Colin: The choice of Graphs/Plots are as follows:\n- Bar Chart\n- Scatter plot\n"
+          "- Line Graph\n- Histogram")
+    print("Summary and Feature Selection are available just ask me " + username.replace(':','').strip())
 
 # Function call for chatbot
 chatbot()

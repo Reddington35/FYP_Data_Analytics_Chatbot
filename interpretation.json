@@ -6,7 +6,7 @@
       "PatternTitle": "Dataset_Irl",
       "Patterns": ["COVID-19 HSE Daily Vaccination Figures Ireland 2021/04/07 - 2022/12/04 ","Irish","irish",
         "ire","Irish Dataset","irish dataset","Ireland","IRELAND","ireland","republic of ireland","Republic of Ireland",
-        "REPUBLIC OF IRELAND","covid_Ireland.csv"],
+        "REPUBLIC OF IRELAND","covid_Ireland.csv","covid ireland","covid_ireland","COVID_IRELAND"],
       "Location": "datasets/covid_Ireland.csv"
     },
     "EU_Covid": {
@@ -15,7 +15,7 @@
       "PatternTitle": "Dataset_EU",
       "Patterns": ["COVID-19 vaccination EU/EEA EU covid","eu","EU","E.U","europe","Europe","EUROPE","european union"
       ,"European Union","EUROPEAN UNION","euro","Euro","EURO","eu dataset","EU Dataset","european dataset",
-        "European Dataset","covid_Eu.csv"],
+        "European Dataset","covid_Eu.csv","covid_EU","covid_eu","covid eu","COVID_EU"],
       "Location": "datasets/covid_EU.csv"
     },
     "WHO_covid": {
@@ -23,7 +23,7 @@
       "SupportText": "WHO Coronavirus (COVID-19) Global Dataset world who covid-19",
       "PatternTitle": "Dataset_WHO",
       "Patterns": ["WHO Coronavirus (COVID-19) Global Dataset world who covid-19","WHO Dataset","who dataset"
-      ,"WHO_covid.csv"],
+      ,"WHO_covid.csv","WHO_covid","Who_Covid","who_covid","who covid","WHO_COVID"],
       "Location": "datasets/WHO_covid.csv"
     },
     "World_Covid": {
@@ -31,7 +31,8 @@
       "SupportText": "World covid-19 vaccination covid world global",
       "PatternTitle": "Dataset_World",
       "Patterns": ["World covid-19 vaccination covid world global","world dataset","World Dataset","global dataset",
-        "Global Dataset","global","World","world","WORLD","WORLD DATASET","covid_World.csv"],
+        "Global Dataset","global","World","world","WORLD","WORLD DATASET","covid_World.csv","covid_World","covid_world",
+      "covid world","COVID_WORLD","Covid_World"],
       "Location": "datasets/covid_World.csv"
     },
     "Irish_World": {
@@ -39,7 +40,7 @@
       "SupportText": "Custom Dataset",
       "PatternTitle": "Custom",
       "Patterns": ["Custom Dataset","custom dataset",
-        "CUSTOM DATASET","Custom","custom","CUSTOM"],
+        "CUSTOM DATASET","Custom","custom","CUSTOM","Custom.csv"],
       "Location": "datasets/Custom.csv"
     },
     "Test_Dataset": {
@@ -156,7 +157,13 @@
       "PatternTitle": "Sort Charts by Age Group",
       "Patterns": ["age","Age","AGE","age group","Age Group","AGE GROUP"],
       "Categorisation": "AGE"
-      }
+      },
+    "Help": {
+      "Title": "Help Command",
+      "PatternTitle": "Help Menu Customer Support",
+      "Patterns": ["help","HELP","Help","Help Menu","help menu","HELP MENU"],
+      "Categorization": "help"
+    }
   }
 }
 
