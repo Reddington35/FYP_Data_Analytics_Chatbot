@@ -2,7 +2,7 @@
 Final Year Project - Data Analytics Chatbot:
 
 The project consists of a user friendly chatbot titled Colin, that provides the user with various methods of asertaining information about the 
-Covid 19 Pandemic for use as a University project.
+Covid 19 Pandemic for my University project.
 
 Key Features:
 - Main Menu loop used to guide the user through the key features using Natural Language Processing (NLP) from the SpaCy Library.
