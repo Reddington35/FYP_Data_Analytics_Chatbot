@@ -68,7 +68,7 @@ def chatbot():
     # Basic Instructions on the services available by the chatbot
     Tasks.print_and_log("Colin: I am a covid-19 chatbot, however I can only provide "
               "help on topics such as:\n - Data summary of the Dataset\n - Graph the Dataset\n - Build a ml model of the"
-              " dataset using (Random Forrest Classification, Naive Bayes or Random Forest Regression"
+              " dataset using (Random Forrest Classification, Naive Bayes or Random Forest Regression)"
               "\n - Display the available Features",conversation)
     # Main Menu Loop
     # While loop that checks to see if the user wants to quit the application

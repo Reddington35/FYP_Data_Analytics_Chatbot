@@ -127,16 +127,14 @@ def dynamic_line_chart(dataset,x_input,y_input,username):
                while refine:
                     Tasks.feature_selection(dataset)
                     print("Colin: How would you like me to Refine this graph " + username.replace(':','').strip() + "?\n"
-                          "Colin: Type 'help' if you require any assistance with this feature\n")
+                          "Colin: Type 'help' if you require any assistance with this feature")
                     user_command = input(username)
                     # help menu called here if user requests help by typing "help" to the console
                     if "help" in user_command.lower():
                          help_screen(dataset)
-
-                    # filter command
-                    #filter_dataset(dataset, user_command, username)
+                         plt.close(fig)
                     # filtering options applied here unless user types quit
-                    if user_command.lower().strip() not in ('quit'):
+                    elif user_command.lower().strip() not in ('quit'):
                          commands_list = user_command.split(",")
                          col = "blue"
                          for c in commands_list:
@@ -166,6 +164,11 @@ def dynamic_line_chart(dataset,x_input,y_input,username):
                                         if new_fig != fig:
                                              print("Colin: Updated figure from " + fig + " to " + new_fig)
                                              fig = new_fig
+                                             is_refined = True
+                                             # Filter call
+                                   if not is_refined:
+                                        if 'filter'.lower().strip() in c:
+                                             df = filter_dataset(dataset, c, df)
                                              is_refined = True
                          plt.figure(fig)
                          plt.plot(df[x_input], df[y_input], color=col)
@@ -213,8 +216,8 @@ def dynamic_bar_chart(dataset,x_input,y_input,username):
                user_command = input(username)
                if "help" in user_command.lower():
                     help_screen(dataset)
-
-               if user_command.lower().strip() not in ('quit'):
+                    plt.close(fig)
+               elif user_command.lower().strip() not in ('quit'):
                     commands_list = user_command.split(",")
                     col = "blue"
                     for c in commands_list:
@@ -243,6 +246,11 @@ def dynamic_bar_chart(dataset,x_input,y_input,username):
                                    if new_fig != fig:
                                         print("Colin: Updated figure from " + fig + " to " + new_fig)
                                         fig = new_fig
+                                        is_refined = True
+                                        # Filter call
+                              if not is_refined:
+                                   if 'filter'.lower().strip() in c:
+                                        df = filter_dataset(dataset, c, df)
                                         is_refined = True
                     plt.figure(fig)
                     plt.bar(df[x_input], df[y_input], color=col)
@@ -291,8 +299,8 @@ def dynamic_scatter_chart(dataset,x_input,y_input,username):
 
                if "help" in user_command.lower():
                     help_screen(dataset)
-
-               if user_command.lower().strip() not in ('quit'):
+                    plt.close(fig)
+               elif user_command.lower().strip() not in ('quit'):
                     commands_list = user_command.split(",")
                     col = "blue"
                     for c in commands_list:
@@ -321,6 +329,11 @@ def dynamic_scatter_chart(dataset,x_input,y_input,username):
                                         print("Colin: Updated figure from " + fig + " to " + new_fig)
                                         fig = new_fig
                                         is_refined = True
+                              #Filter call
+                              if not is_refined:
+                                   if 'filter'.lower().strip() in c:
+                                        df = filter_dataset(dataset,c,df)
+                                        is_refined = True
                     col = color_select(user_command.lower())
                     plt.figure(fig)
                     plt.scatter(df[x_input], df[y_input], color=col)
@@ -330,9 +343,12 @@ def dynamic_scatter_chart(dataset,x_input,y_input,username):
                     plt.show()
                else:
                     refine = False
-     except:
-          print("Colin: oops something went wrong with your graph,\n please leave a comment in the feedback section about"
-                " this issue and I will try to fix it as soon as I can")
+     except Exception as e:
+          print(
+               "Colin: oops something went wrong with your graph,\n please leave a comment in the feedback section about"
+               " this issue and I will try to fix it as soon as I can")
+          print(e)
+
 
 # Dynamic functions for graphing
 # Selected as suitable choice for final build
@@ -365,8 +381,8 @@ def dynamic_histogram(dataset,x_input,username):
                user_command = input(username)
                if "help" in user_command.lower():
                     help_screen(dataset)
-
-               if user_command.lower().strip() not in ('quit'):
+                    plt.close(fig)
+               elif user_command.lower().strip() not in ('quit'):
                     commands_list = user_command.split(",")
                     col = "blue"
                     for c in commands_list:
@@ -399,6 +415,11 @@ def dynamic_histogram(dataset,x_input,username):
                                    if new_bin != bin:
                                         print("Colin: Updated bins from " + bin + " to " + new_bin)
                                         bin = new_bin
+                                        is_refined = True
+                              # Filter call
+                              if not is_refined:
+                                   if 'filter'.lower().strip() in c:
+                                        df = filter_dataset(dataset, c, df)
                                         is_refined = True
                     plt.figure(fig)
                     plt.hist(df[x_input], color=col,bins=int(bin))
@@ -524,31 +545,58 @@ def help_screen(dataset):
      Tasks.feature_selection(dataset)
      print("Colin: You can refine the graph by placing '=' in front of the graph feature you wish to update\n"
                 "for Example:\n"
-                "-x=Feature Name\n-y=Feature Name\n-title=Name of Chart\n-figure=Name of Figure\n-bins=number of bins"
+                "- x=Feature Name\n-y=Feature Name\n-title=Name of Chart\n-figure=Name of Figure\n-bins=number of bins"
                 " (Histogram only)"
-                "-Fields are ',' separated\n"
+                "- Fields are ',' separated\n"
                 "For Example:  title=Title Name,figure=Name of Figure\n"
+                "- filter the dataset using the keyword filter the name of the feature and the opperator (<,>,=)\n"
+                "For example filter feature < 40000, filter location = Uganda\n"
+                "Note: filter reset is used to reset the dataset to its original state\n"
                 "Colin: If your finished refining the graph please reply 'quit' as your response\n")
 
 # method for filtering Dataset
-def filter_dataset(dataset,command,username):
-     features = group_features(dataset)
+def filter_dataset(dataset,command,df):
+     print("entering function now")
+     #features = group_features(dataset)
      #filter_greater = ["filter by"]
      if command[0:6] == "filter":
           command = command[7:]
          # Check for opperators (>,<,=,<>)
+          print("command =" + command)
           if ">" in command:
                column = command[0: command.find(">")].lower().strip()
                value = command[command.find(">")+1:].lower().strip()
-               print(column + "by" + value)
+               print("Printing" + column + " > " + value)
+               if column in df:
+                    print("Shape before filter" + str(df.shape))
+                    dataset = df[df[column] > value]
+                    print("Shape After filter" + str(df.shape))
+               else:
+                    print("Cant filter using this feature")
           elif "<" in command:
                column = command[0: command.find("<")].lower().strip()
                value = command[command.find("<")+1:].lower().strip()
-               print(column + "by" + value)
+               print(column + " < " + value)
+               if column in df:
+                    print("Shape before filter" + str(df.shape))
+                    df = df[df[column] < float(value)]
+                    print("Shape after filter" + str(df.shape))
+               else:
+                    print("Cant filter using this feature")
           elif "=" in command:
                column = command[0: command.find("=")].lower().strip()
                value = command[command.find("=")+1:].lower().strip()
-               print(column,value)
+               print(column + "=" + value)
+               if column in df:
+                    print("Shape before filter" + str(df.shape))
+                    df = df[df[column].str.lower() == value]
+                    print("Shape after filter" + str(df.shape))
+               else:
+                    print("Cant filter using this feature")
+          elif "reset" in command:
+               print("reset filters")
+               df = pd.read_csv(dataset["Location"], index_col=False)
+     return df
 
 
 

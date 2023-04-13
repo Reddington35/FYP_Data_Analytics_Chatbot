@@ -156,7 +156,7 @@ def RandomForestClassification(target, labels, dataset,username):
             plt.show()
             # code to perform HP Changes for algorithm
             refine_command = input("Colin: Would you like to refine hyper-parameters ?" +"\n" + username)
-            if refine_command.lower().strip() in ['quit', 'no', 'n']:
+            if refine_command.lower().strip() in ['quit', 'no', 'n','exit']:
                 refinement = False
             else:
                 redifined_list = refine_command.split(",")
@@ -348,7 +348,7 @@ def RandomForestRegression(target, labels, dataset,username):
             plt.show()
 
             refine_command = input("Colin: Would you like to refine hyper-perameters ?" + "\n" + username)
-            if refine_command.lower().strip() in ['quit', 'no', 'n']:
+            if refine_command.lower().strip() in ['quit', 'no', 'n','exit']:
                 refinement = False
             else:
                 redifined_list = refine_command.split(",")
