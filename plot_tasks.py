@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import Tasks
 
+# Tasks.py file used for all ML Features
 # Dynamic functions for graphing
 # Selected as suitable choice for final build
 def dynamic_line_chart(dataset,x_input,y_input,username):
