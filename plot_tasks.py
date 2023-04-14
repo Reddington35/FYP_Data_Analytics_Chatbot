@@ -2,96 +2,6 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import Tasks
 
-# World Dataset operations using different types of charts
-# used as a prototype function for basic graphing usig the Pandas library
-# not used in final Build
-def make_line_chart(dataset,entry_field,exit_field,target,region,location,start_date,end_date,color):
-     # read in dataframe
-     df = pd.read_csv(dataset['Location'],index_col=False)
-     df = df[(df[entry_field] == region) & (df[exit_field] == location)]
-     #print("result is ",df)
-     # converts date string to date object using the pandas library
-     df['date'] = pd.to_datetime(df['date'])
-     df = df.set_index(df['date'])
-     # Filters dataframe by region, location, start date and end date
-     df = df[(df[entry_field] == region) & (df[exit_field] == location) & (df['date'] > start_date) & (df['date'] < end_date)]
-     # sets plot using target varible, color set in perameters
-     plt.plot(df[target],color=color)
-     # sets the title of the chart
-     plt.title(target, fontsize=14)
-     # labels the x values
-     plt.xlabel("From "+ start_date + " to " + end_date, fontsize=14)
-     # labels the y values
-     plt.ylabel("Region " + region + " - " + location, fontsize=14)
-     # sets to grid view
-     plt.grid(True)
-     # displays plot
-     plt.show()
-
-#make_line_chart("datasets/covid_world.csv","continent","location","new_deaths","Europe","Ireland","2020-02-29","2023-01-15","purple")
-
-# Function for plotting a Scatter Plot
-# Not used in final Build
-def make_scatterplot(dataset,entry_field,exit_field,x,y,region,location,start_date,end_date,color):
-     df = pd.read_csv(dataset,index_col=False)
-     df = df[(df[entry_field] == region) & (df[exit_field] == location)]
-     print("result is ", df)
-     df['date'] = pd.to_datetime(df['date'])
-     df = df.set_index(df['date'])
-     df = df[(df[entry_field] == region) & (df[exit_field] == location) & (df['date'] > start_date) & (
-                  df['date'] < end_date)]
-     plt.scatter(df[x],df[y], color=color)
-     plt.title("comparing " + x + " to " + y, fontsize=14)
-     plt.xlabel("From " + start_date + " to " + end_date, fontsize=14)
-     plt.ylabel("Region " + region + " - " + location, fontsize=14)
-     plt.grid(True)
-     plt.show()
-
-#make_scatterplot("datasets/covid_world.csv","continent","location","total_deaths","new_deaths","Europe","Ireland","2020-02-29","2023-01-15","purple")
-
-# Function for plotting Bar Chart
-def make_barchart(dataset,entry_field,exit_field,x,y,region,location,start_date,end_date,color):
-     # reads in dataframe
-     df = pd.read_csv(dataset,index_col=False)
-     # seperates df by region or location
-     df = df[(df[entry_field] == region) & (df[exit_field] == location)]
-     print("result is ", df)
-     # using date time object to fetch date
-     df['date'] = pd.to_datetime(df['date'])
-     # function to set index of date from df
-     df = df.set_index(df['date'])
-     # df being partitioned her by ,region,location,start and end date
-     df = df[(df[entry_field] == region) & (df[exit_field] == location) & (df['date'] > start_date) & (
-             df['date'] < end_date)]
-     # Bar Graph function
-     plt.bar(df[x], df[y], color=color)
-     plt.title("comparing " + x + " to " + y, fontsize=14)
-     plt.xlabel("From " + start_date + " to " + end_date, fontsize=14)
-     plt.ylabel("Region " + region + " - " + location, fontsize=14)
-     plt.grid(True)
-     plt.show()
-
-#make_barchart("datasets/covid_world.csv","continent","location","date","new_deaths","Europe","Ireland","2020-02-29","2023-01-15","purple")
-
-# Function for plotting Histogram
-# Not used in final build
-def make_histogram(dataset,entry_field,exit_field,x,region,location,start_date,end_date,color):
-     df = pd.read_csv(dataset, index_col=False)
-     df = df[(df[entry_field] == region) & (df[exit_field] == location)]
-     print("result is ", df)
-     df['date'] = pd.to_datetime(df['date'])
-     df = df.set_index(df['date'])
-     df = df[(df[entry_field] == region) & (df[exit_field] == location) & (df['date'] > start_date) & (
-             df['date'] < end_date)]
-     # Histogram function
-     df.hist(x, figsize=[12,12],bins=12,color=color)
-     plt.title("Title:" + x, fontsize=14)
-     plt.xlabel("From " + start_date + " to " + end_date, fontsize=14)
-     plt.ylabel("Region " + region + " - " + location, fontsize=14)
-     plt.grid(True)
-     plt.show()
-#make_histogram("datasets/covid_world.csv","continent","location","new_deaths","Europe","Ireland","2020-02-29","2023-01-15","purple")
-
 # Dynamic functions for graphing
 # Selected as suitable choice for final build
 def dynamic_line_chart(dataset,x_input,y_input,username):
@@ -296,7 +206,7 @@ def dynamic_scatter_chart(dataset,x_input,y_input,username):
                print("Colin: How would you like me to Refine this graph " + username.replace(':', '').strip() + "?\n"
                     "Colin: Type 'help' if you require any assistance with this feature")
                user_command = input(username)
-
+               # help menu for user
                if "help" in user_command.lower():
                     help_screen(dataset)
                     plt.close(fig)
@@ -446,7 +356,7 @@ def group_features(dataset):
 def color_select(user_input):
      # Default color set
      color = "blue"
-     color_select = ["red", "green","blue", "yellow", "purple", "orange", "cyan", "magenta", "pink", "black"]
+     color_select = ["red", "green","blue", "yellow", "purple", "orange", "cyan", "magenta", "pink", "black","brown"]
      # loops through all colors until matched with user input
      for i in color_select:
           if i in user_input.lower():
@@ -556,45 +466,44 @@ def help_screen(dataset):
 
 # method for filtering Dataset
 def filter_dataset(dataset,command,df):
-     print("entering function now")
-     #features = group_features(dataset)
+     #print("entering function now") - Test
      #filter_greater = ["filter by"]
      if command[0:6] == "filter":
           command = command[7:]
          # Check for opperators (>,<,=,<>)
-          print("command =" + command)
+          #print("command =" + command)
           if ">" in command:
                column = command[0: command.find(">")].lower().strip()
                value = command[command.find(">")+1:].lower().strip()
-               print("Printing" + column + " > " + value)
+               print("Colin: Printing" + column + " > " + value)
                if column in df:
-                    print("Shape before filter" + str(df.shape))
-                    dataset = df[df[column] > value]
-                    print("Shape After filter" + str(df.shape))
+                    print("Colin: Shape before filter" + str(df.shape))
+                    df = df[df[column] > value]
+                    print("Colin: Shape After filter" + str(df.shape))
                else:
-                    print("Cant filter using this feature")
+                    print("Colin: This is not a valid Feature")
           elif "<" in command:
                column = command[0: command.find("<")].lower().strip()
                value = command[command.find("<")+1:].lower().strip()
-               print(column + " < " + value)
+               print("Colin: " + column + " < " + value)
                if column in df:
-                    print("Shape before filter" + str(df.shape))
+                    print("Colin: Shape before filter" + str(df.shape))
                     df = df[df[column] < float(value)]
-                    print("Shape after filter" + str(df.shape))
+                    print("Colin: Shape after filter" + str(df.shape))
                else:
-                    print("Cant filter using this feature")
+                    print("Colin: This is not a valid Feature")
           elif "=" in command:
                column = command[0: command.find("=")].lower().strip()
                value = command[command.find("=")+1:].lower().strip()
-               print(column + "=" + value)
+               print("Colin: " + column + "=" + value)
                if column in df:
-                    print("Shape before filter" + str(df.shape))
+                    print("Colin: Shape before filter" + str(df.shape))
                     df = df[df[column].str.lower() == value]
-                    print("Shape after filter" + str(df.shape))
+                    print("Colin: Shape after filter" + str(df.shape))
                else:
-                    print("Cant filter using this feature")
+                    print("Colin: This is not a valid feature")
           elif "reset" in command:
-               print("reset filters")
+               print("Colin: reseting filters")
                df = pd.read_csv(dataset["Location"], index_col=False)
      return df
 

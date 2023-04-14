@@ -10,7 +10,6 @@ from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import StandardScaler,OneHotEncoder,OrdinalEncoder
 from sklearn.model_selection import KFold
 from sklearn import metrics
-import numpy as np
 import NLP
 import warnings
 
