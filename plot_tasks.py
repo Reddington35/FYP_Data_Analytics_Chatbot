@@ -2,7 +2,6 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import Tasks
 
-# Test commit
 # Tasks.py file used for all ML Features
 # Dynamic functions for graphing
 # Selected as suitable choice for final build
